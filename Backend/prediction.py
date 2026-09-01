@@ -1,9 +1,14 @@
+import os
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
 import torch
 import torch.nn as nn
+
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 
 # ============================================================
@@ -60,7 +65,6 @@ FEATURES = [
 
 # ============================================================
 # TRANSFORMER MODEL
-# EXACTLY MATCHES train_transformer.py
 # ============================================================
 
 class CricketTransformer(nn.Module):
@@ -130,6 +134,7 @@ class CricketTransformer(nn.Module):
 
         x = self.transformer(x)
 
+        # Use the last time step
         x = x[:, -1, :]
 
         x = self.classifier(x)
@@ -142,10 +147,20 @@ class CricketTransformer(nn.Module):
 # ============================================================
 
 print("=" * 60)
-print("IPL WIN PROBABILITY PREDICTION")
+print("IPL WIN PROBABILITY PREDICTION API")
 print("=" * 60)
 
 print("\nUsing device:", DEVICE)
+
+print("\nModel path:", MODEL_PATH)
+
+
+if not MODEL_PATH.exists():
+
+    raise FileNotFoundError(
+        f"Model file not found: {MODEL_PATH}"
+    )
+
 
 print("\nLoading Transformer model...")
 
@@ -157,7 +172,9 @@ checkpoint = torch.load(
 )
 
 
-# Read settings saved during training
+# ============================================================
+# LOAD TRAINING SETTINGS
+# ============================================================
 
 MODEL_FEATURES = checkpoint.get(
     "features",
@@ -195,7 +212,9 @@ NUM_LAYERS = checkpoint.get(
 )
 
 
-# Create model
+# ============================================================
+# CREATE MODEL
+# ============================================================
 
 model = CricketTransformer(
     input_dim=len(MODEL_FEATURES),
@@ -207,7 +226,9 @@ model = CricketTransformer(
 ).to(DEVICE)
 
 
-# Load weights
+# ============================================================
+# LOAD MODEL WEIGHTS
+# ============================================================
 
 model.load_state_dict(
     checkpoint["model_state_dict"]
@@ -215,11 +236,18 @@ model.load_state_dict(
 
 model.eval()
 
-print("Model loaded successfully.")
 
-print("\nSequence length:", SEQUENCE_LENGTH)
+print("\nModel loaded successfully.")
 
-print("Number of features:", len(MODEL_FEATURES))
+print(
+    "Sequence length:",
+    SEQUENCE_LENGTH
+)
+
+print(
+    "Number of features:",
+    len(MODEL_FEATURES)
+)
 
 
 # ============================================================
@@ -238,6 +266,7 @@ def predict_from_sequence(sequence):
         probability between 0 and 1
     """
 
+    # Convert input to NumPy
     sequence = np.asarray(
         sequence,
         dtype=np.float32
@@ -263,12 +292,34 @@ def predict_from_sequence(sequence):
 
 
     # --------------------------------------------------------
+    # Validate numeric values
+    # --------------------------------------------------------
+
+    if not np.all(np.isfinite(sequence)):
+
+        raise ValueError(
+            "Sequence contains invalid numerical values."
+        )
+
+
+    # --------------------------------------------------------
+    # Prevent division by zero
+    # --------------------------------------------------------
+
+    safe_std = np.where(
+        STD == 0,
+        1.0,
+        STD
+    )
+
+
+    # --------------------------------------------------------
     # Normalize using training statistics
     # --------------------------------------------------------
 
     sequence = (
         sequence - MEAN
-    ) / STD
+    ) / safe_std
 
 
     # --------------------------------------------------------
@@ -301,7 +352,165 @@ def predict_from_sequence(sequence):
 
 
 # ============================================================
-# CREATE SAMPLE SEQUENCE
+# FLASK APPLICATION
+# ============================================================
+
+app = Flask(__name__)
+
+# Allow Lovable/frontend to communicate with this API
+CORS(app)
+
+
+# ============================================================
+# HOME / HEALTH CHECK
+# ============================================================
+
+@app.route("/", methods=["GET"])
+def home():
+
+    return jsonify({
+        "status": "success",
+        "message": "IPL AI Win Probability API is running",
+        "model": "Transformer",
+        "sequence_length": SEQUENCE_LENGTH,
+        "features": len(MODEL_FEATURES)
+    })
+
+
+# ============================================================
+# HEALTH CHECK
+# ============================================================
+
+@app.route("/health", methods=["GET"])
+def health():
+
+    return jsonify({
+        "status": "healthy"
+    })
+
+
+# ============================================================
+# PREDICTION API
+# ============================================================
+
+@app.route("/predict", methods=["POST"])
+def predict():
+
+    try:
+
+        # ----------------------------------------------------
+        # Read JSON
+        # ----------------------------------------------------
+
+        data = request.get_json(
+            silent=True
+        )
+
+
+        if data is None:
+
+            return jsonify({
+                "status": "error",
+                "error": "Request must contain JSON data."
+            }), 400
+
+
+        # ----------------------------------------------------
+        # Get sequence
+        # ----------------------------------------------------
+
+        sequence = data.get(
+            "sequence"
+        )
+
+
+        if sequence is None:
+
+            return jsonify({
+                "status": "error",
+                "error": "Missing 'sequence' field."
+            }), 400
+
+
+        # ----------------------------------------------------
+        # Prediction
+        # ----------------------------------------------------
+
+        probability = predict_from_sequence(
+            sequence
+        )
+
+
+        # ----------------------------------------------------
+        # Convert to percentage
+        # ----------------------------------------------------
+
+        batting_probability = (
+            probability * 100
+        )
+
+        bowling_probability = (
+            100 - batting_probability
+        )
+
+
+        # ----------------------------------------------------
+        # Final prediction
+        # ----------------------------------------------------
+
+        if batting_probability >= 50:
+
+            prediction = (
+                "Batting team is more likely to win."
+            )
+
+        else:
+
+            prediction = (
+                "Bowling team is more likely to win."
+            )
+
+
+        # ----------------------------------------------------
+        # Response
+        # ----------------------------------------------------
+
+        return jsonify({
+
+            "status": "success",
+
+            "batting_team_win_probability": round(
+                batting_probability,
+                2
+            ),
+
+            "bowling_team_win_probability": round(
+                bowling_probability,
+                2
+            ),
+
+            "prediction": prediction
+        })
+
+
+    except Exception as e:
+
+        print(
+            "Prediction error:",
+            str(e)
+        )
+
+        return jsonify({
+
+            "status": "error",
+
+            "error": str(e)
+
+        }), 400
+
+
+# ============================================================
+# LOCAL TESTING
 # ============================================================
 
 def create_sample_sequence():
@@ -310,14 +519,22 @@ def create_sample_sequence():
     Creates a sample 12-ball sequence
     from the processed IPL dataset.
 
-    This is ONLY for testing.
+    Used only for local testing.
     """
 
     print("\nLoading dataset...")
 
+    if not DATA_PATH.exists():
+
+        raise FileNotFoundError(
+            f"Dataset not found: {DATA_PATH}"
+        )
+
+
     df = pd.read_csv(
         DATA_PATH
     )
+
 
     print(
         "Dataset shape:",
@@ -360,73 +577,77 @@ def create_sample_sequence():
 
 
 # ============================================================
-# MAIN TEST
+# MAIN
 # ============================================================
 
 if __name__ == "__main__":
 
-    print("\nGenerating sample 12-ball sequence...")
+    print("\nRunning local model test...")
 
-    sequence = create_sample_sequence()
+    try:
 
-
-    print(
-        "\nSequence shape:",
-        sequence.shape
-    )
+        sequence = create_sample_sequence()
 
 
-    probability = predict_from_sequence(
-        sequence
-    )
-
-
-    batting_probability = (
-        probability * 100
-    )
-
-    bowling_probability = (
-        100 - batting_probability
-    )
-
-
-    if batting_probability >= 50:
-
-        prediction = (
-            "Batting team is more likely to win."
-        )
-
-    else:
-
-        prediction = (
-            "Bowling team is more likely to win."
+        print(
+            "\nSequence shape:",
+            sequence.shape
         )
 
 
-    print("\n" + "=" * 60)
+        probability = predict_from_sequence(
+            sequence
+        )
 
-    print("PREDICTION RESULT")
 
-    print("=" * 60)
+        batting_probability = (
+            probability * 100
+        )
 
-    print(
-        f"\nBatting Team Win Probability : "
-        f"{batting_probability:.2f}%"
-    )
+        bowling_probability = (
+            100 - batting_probability
+        )
 
-    print(
-        f"Bowling Team Win Probability : "
-        f"{bowling_probability:.2f}%"
-    )
 
-    print(
-        f"\nPrediction: {prediction}"
-    )
+        if batting_probability >= 50:
 
-    print("\n" + "=" * 60)
+            prediction = (
+                "Batting team is more likely to win."
+            )
 
-    print(
-        "Prediction completed successfully."
-    )
+        else:
 
-    print("=" * 60)
+            prediction = (
+                "Bowling team is more likely to win."
+            )
+
+
+        print("\n" + "=" * 60)
+
+        print("PREDICTION RESULT")
+
+        print("=" * 60)
+
+        print(
+            f"\nBatting Team Win Probability : "
+            f"{batting_probability:.2f}%"
+        )
+
+        print(
+            f"Bowling Team Win Probability : "
+            f"{bowling_probability:.2f}%"
+        )
+
+        print(
+            f"\nPrediction: {prediction}"
+        )
+
+        print("\n" + "=" * 60)
+
+
+    except Exception as e:
+
+        print(
+            "\nLocal test failed:",
+            str(e)
+        )
