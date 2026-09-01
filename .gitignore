@@ -1,8 +1,17 @@
+# Python
 __pycache__/
 *.pyc
-.venv/
+
+# Virtual environments
 venv/
-env/
+.venv/
+
+# Large processed ML datasets
+Backend/data/processed/*.npy
+Backend/data/processed/*.npz
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment files
 .env
-.vscode/
-.idea/
