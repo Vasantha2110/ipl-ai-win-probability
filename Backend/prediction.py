@@ -76,7 +76,7 @@ df = pd.read_csv(DATA_PATH)
 print("Dataset shape:", df.shape)
 
 # Keep original dataset order.
-# This is useful because legal_balls can sometimes repeat
+# This is important because legal_balls can repeat
 # when an over contains illegal deliveries.
 df["_row_order"] = np.arange(len(df))
 
@@ -100,13 +100,21 @@ class CricketTransformer(nn.Module):
 
         super().__init__()
 
-        # 15 input features -> 64 dimensional embedding
+        # ----------------------------------------------------
+        # Input projection
+        # 15 features -> 64-dimensional embedding
+        # ----------------------------------------------------
+
         self.input_projection = nn.Linear(
             input_dim,
             embed_dim
         )
 
+
+        # ----------------------------------------------------
         # Learnable positional embedding
+        # ----------------------------------------------------
+
         self.position_embedding = nn.Parameter(
             torch.zeros(
                 1,
@@ -115,7 +123,11 @@ class CricketTransformer(nn.Module):
             )
         )
 
-        # Transformer encoder
+
+        # ----------------------------------------------------
+        # Transformer encoder layer
+        # ----------------------------------------------------
+
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=embed_dim,
             nhead=num_heads,
@@ -125,13 +137,23 @@ class CricketTransformer(nn.Module):
             activation="gelu"
         )
 
+
+        # ----------------------------------------------------
+        # Transformer encoder
+        # ----------------------------------------------------
+
         self.transformer = nn.TransformerEncoder(
             encoder_layer,
             num_layers=num_layers
         )
 
+
+        # ----------------------------------------------------
         # Classification head
+        # ----------------------------------------------------
+
         self.classifier = nn.Sequential(
+
             nn.Linear(
                 embed_dim,
                 32
@@ -139,13 +161,16 @@ class CricketTransformer(nn.Module):
 
             nn.ReLU(),
 
-            nn.Dropout(dropout),
+            nn.Dropout(
+                dropout
+            ),
 
             nn.Linear(
                 32,
                 1
             )
         )
+
 
     def forward(self, x):
 
@@ -155,7 +180,7 @@ class CricketTransformer(nn.Module):
         # Add positional information
         x = x + self.position_embedding
 
-        # Transformer
+        # Transformer encoder
         x = self.transformer(x)
 
         # Use final timestep
@@ -180,7 +205,10 @@ checkpoint = torch.load(
 )
 
 
-# Read configuration from checkpoint when available
+# ============================================================
+# READ CONFIGURATION FROM CHECKPOINT
+# ============================================================
+
 checkpoint_features = checkpoint.get(
     "features",
     FEATURES
@@ -207,18 +235,33 @@ checkpoint_num_layers = checkpoint.get(
 )
 
 
-# Create EXACT trained architecture
+# ============================================================
+# CREATE EXACT TRAINED ARCHITECTURE
+# ============================================================
+
 model = CricketTransformer(
-    input_dim=len(checkpoint_features),
+
+    input_dim=len(
+        checkpoint_features
+    ),
+
     sequence_length=checkpoint_sequence_length,
+
     embed_dim=checkpoint_embed_dim,
+
     num_heads=checkpoint_num_heads,
+
     num_layers=checkpoint_num_layers,
+
     dropout=DROPOUT
+
 ).to(DEVICE)
 
 
-# Load trained weights
+# ============================================================
+# LOAD TRAINED WEIGHTS
+# ============================================================
+
 model.load_state_dict(
     checkpoint["model_state_dict"]
 )
@@ -226,13 +269,36 @@ model.load_state_dict(
 model.eval()
 
 
-print("Model loaded successfully.")
+# ============================================================
+# MODEL INFORMATION
+# ============================================================
 
-print("Sequence length:", checkpoint_sequence_length)
-print("Number of features:", len(checkpoint_features))
-print("Embedding dimension:", checkpoint_embed_dim)
-print("Attention heads:", checkpoint_num_heads)
-print("Transformer layers:", checkpoint_num_layers)
+print("\nModel loaded successfully.")
+
+print(
+    "Sequence length:",
+    checkpoint_sequence_length
+)
+
+print(
+    "Number of features:",
+    len(checkpoint_features)
+)
+
+print(
+    "Embedding dimension:",
+    checkpoint_embed_dim
+)
+
+print(
+    "Attention heads:",
+    checkpoint_num_heads
+)
+
+print(
+    "Transformer layers:",
+    checkpoint_num_layers
+)
 
 
 # ============================================================
@@ -249,6 +315,7 @@ MODEL_STD = np.array(
     dtype=np.float32
 )
 
+# Prevent division by zero
 MODEL_STD[MODEL_STD == 0] = 1
 
 
@@ -258,6 +325,8 @@ MODEL_STD[MODEL_STD == 0] = 1
 
 app = Flask(__name__)
 
+# Enable CORS so the deployed frontend can communicate
+# with the deployed Flask backend.
 CORS(app)
 
 
@@ -265,15 +334,28 @@ CORS(app)
 # ROOT
 # ============================================================
 
-@app.route("/", methods=["GET"])
+@app.route(
+    "/",
+    methods=["GET"]
+)
 def home():
 
     return jsonify({
+
         "status": "success",
-        "message": "IPL AI Win Probability API is running.",
-        "model": "Transformer",
-        "sequence_length": checkpoint_sequence_length,
-        "features": len(checkpoint_features)
+
+        "message":
+            "IPL AI Win Probability API is running.",
+
+        "model":
+            "Transformer",
+
+        "sequence_length":
+            checkpoint_sequence_length,
+
+        "features":
+            len(checkpoint_features)
+
     })
 
 
@@ -283,45 +365,75 @@ def home():
 
 def predict_from_sequence(sequence):
 
+    # Convert to NumPy array
     sequence = np.array(
         sequence,
         dtype=np.float32
     )
 
-    # Check shape
+
+    # --------------------------------------------------------
+    # Expected shape
+    # --------------------------------------------------------
+
     expected_shape = (
         checkpoint_sequence_length,
         len(checkpoint_features)
     )
 
+
     if sequence.shape != expected_shape:
 
         raise ValueError(
-            f"Expected sequence shape {expected_shape}, "
-            f"but received {sequence.shape}"
+
+            f"Expected sequence shape "
+            f"{expected_shape}, "
+
+            f"but received "
+            f"{sequence.shape}"
+
         )
 
+
+    # --------------------------------------------------------
     # Normalize using training statistics
+    # --------------------------------------------------------
+
     sequence = (
         sequence - MODEL_MEAN
     ) / MODEL_STD
 
-    # Convert to tensor
+
+    # --------------------------------------------------------
+    # Convert to PyTorch tensor
+    # --------------------------------------------------------
+
     tensor = torch.tensor(
         sequence,
         dtype=torch.float32
     ).unsqueeze(0).to(DEVICE)
 
+
+    # --------------------------------------------------------
     # Prediction
+    # --------------------------------------------------------
+
     with torch.no_grad():
 
-        logit = model(tensor)
+        logit = model(
+            tensor
+        )
 
         batting_probability = torch.sigmoid(
             logit
         ).item()
 
-    bowling_probability = 1 - batting_probability
+
+    # Bowling probability
+    bowling_probability = (
+        1 - batting_probability
+    )
+
 
     return (
         batting_probability,
@@ -331,32 +443,72 @@ def predict_from_sequence(sequence):
 
 # ============================================================
 # /predict
+# MANUAL SEQUENCE PREDICTION
 # ============================================================
 
-@app.route("/predict", methods=["POST"])
+@app.route(
+    "/predict",
+    methods=["POST"]
+)
 def predict():
 
     try:
 
         data = request.get_json()
 
+
+        # ----------------------------------------------------
+        # Check JSON
+        # ----------------------------------------------------
+
         if data is None:
+
             return jsonify({
+
                 "status": "error",
-                "error": "No JSON data received."
+
+                "error":
+                    "No JSON data received."
+
             }), 400
 
-        sequence = data.get("sequence")
+
+        # ----------------------------------------------------
+        # Get sequence
+        # ----------------------------------------------------
+
+        sequence = data.get(
+            "sequence"
+        )
+
 
         if sequence is None:
+
             return jsonify({
+
                 "status": "error",
-                "error": "Missing 'sequence'."
+
+                "error":
+                    "Missing 'sequence'."
+
             }), 400
 
-        batting_probability, bowling_probability = (
-            predict_from_sequence(sequence)
+
+        # ----------------------------------------------------
+        # Prediction
+        # ----------------------------------------------------
+
+        (
+            batting_probability,
+            bowling_probability
+        ) = predict_from_sequence(
+            sequence
         )
+
+
+        # ----------------------------------------------------
+        # Prediction label
+        # ----------------------------------------------------
 
         if batting_probability >= 0.5:
 
@@ -370,9 +522,15 @@ def predict():
                 "Bowling team is more likely to win."
             )
 
+
+        # ----------------------------------------------------
+        # Response
+        # ----------------------------------------------------
+
         return jsonify({
 
-            "status": "success",
+            "status":
+                "success",
 
             "batting_team_win_probability":
                 round(
@@ -386,14 +544,22 @@ def predict():
                     2
                 ),
 
-            "prediction": prediction
+            "prediction":
+                prediction
+
         })
+
 
     except Exception as e:
 
         return jsonify({
-            "status": "error",
-            "error": str(e)
+
+            "status":
+                "error",
+
+            "error":
+                str(e)
+
         }), 400
 
 
@@ -401,54 +567,88 @@ def predict():
 # GET MATCH LIST
 # ============================================================
 
-@app.route("/matches", methods=["GET"])
+@app.route(
+    "/matches",
+    methods=["GET"]
+)
 def get_matches():
 
     try:
 
         matches = []
 
+
+        # ----------------------------------------------------
+        # Group dataset by match
+        # ----------------------------------------------------
+
         grouped = df.groupby(
             "match_id",
             sort=False
         )
 
+
         for match_id, match_df in grouped:
 
             first_row = match_df.iloc[0]
 
+
             matches.append({
 
-                "match_id": int(match_id),
+                "match_id":
+                    int(match_id),
 
-                "date": str(
-                    first_row["date"]
-                ),
+                "date":
+                    str(
+                        first_row["date"]
+                    ),
 
-                "venue": str(
-                    first_row["venue"]
-                ),
+                "venue":
+                    str(
+                        first_row["venue"]
+                    ),
 
-                "batting_team": str(
-                    first_row["batting_team"]
-                ),
+                "batting_team":
+                    str(
+                        first_row["batting_team"]
+                    ),
 
-                "bowling_team": str(
-                    first_row["bowling_team"]
-                )
+                "bowling_team":
+                    str(
+                        first_row["bowling_team"]
+                    )
+
             })
 
+
+        # ----------------------------------------------------
+        # Response
+        # ----------------------------------------------------
+
         return jsonify({
-            "status": "success",
-            "count": len(matches),
-            "matches": matches
+
+            "status":
+                "success",
+
+            "count":
+                len(matches),
+
+            "matches":
+                matches
+
         })
+
 
     except Exception as e:
 
         return jsonify({
-            "status": "error",
-            "error": str(e)
+
+            "status":
+                "error",
+
+            "error":
+                str(e)
+
         }), 500
 
 
@@ -464,26 +664,43 @@ def get_match_states(match_id):
 
     try:
 
+        # ----------------------------------------------------
+        # Get selected match
+        # ----------------------------------------------------
+
         match_df = df[
             df["match_id"] == match_id
         ].copy()
 
+
         if match_df.empty:
 
             return jsonify({
-                "status": "error",
-                "error": f"Match {match_id} not found."
+
+                "status":
+                    "error",
+
+                "error":
+                    f"Match {match_id} not found."
+
             }), 404
 
 
-        # Sort according to training order
+        # ----------------------------------------------------
+        # Sort according to original dataset order
+        # ----------------------------------------------------
+
         match_df = match_df.sort_values(
             "_row_order"
-        ).reset_index(drop=True)
+        ).reset_index(
+            drop=True
+        )
 
 
-        # Remove duplicate legal-ball states.
-        # Keep the LAST state for each legal ball.
+        # ----------------------------------------------------
+        # Remove duplicate legal-ball states
+        # ----------------------------------------------------
+
         states = (
             match_df
             .drop_duplicates(
@@ -495,84 +712,119 @@ def get_match_states(match_id):
 
         result = []
 
+
+        # ----------------------------------------------------
+        # Create state objects
+        # ----------------------------------------------------
+
         for _, row in states.iterrows():
 
             result.append({
 
-                "legal_balls": int(
-                    row["legal_balls"]
-                ),
+                "legal_balls":
+                    int(
+                        row["legal_balls"]
+                    ),
 
-                "over": float(
-                    row["over"]
-                ),
+                "over":
+                    float(
+                        row["over"]
+                    ),
 
-                "score": int(
-                    row["score"]
-                ),
+                "score":
+                    int(
+                        row["score"]
+                    ),
 
-                "wickets_lost": int(
-                    row["wickets_lost"]
-                ),
+                "wickets_lost":
+                    int(
+                        row["wickets_lost"]
+                    ),
 
-                "wickets_remaining": int(
-                    row["wickets_remaining"]
-                ),
+                "wickets_remaining":
+                    int(
+                        row["wickets_remaining"]
+                    ),
 
-                "target": int(
-                    row["target"]
-                ),
+                "target":
+                    int(
+                        row["target"]
+                    ),
 
-                "runs_required": int(
-                    row["runs_required"]
-                ),
+                "runs_required":
+                    int(
+                        row["runs_required"]
+                    ),
 
-                "balls_remaining": int(
-                    row["balls_remaining"]
-                ),
+                "balls_remaining":
+                    int(
+                        row["balls_remaining"]
+                    ),
 
-                "current_run_rate": float(
-                    row["current_run_rate"]
-                ),
+                "current_run_rate":
+                    float(
+                        row["current_run_rate"]
+                    ),
 
-                "required_run_rate": float(
-                    row["required_run_rate"]
-                ),
+                "required_run_rate":
+                    float(
+                        row["required_run_rate"]
+                    ),
 
-                "batting_team": str(
-                    row["batting_team"]
-                ),
+                "batting_team":
+                    str(
+                        row["batting_team"]
+                    ),
 
-                "bowling_team": str(
-                    row["bowling_team"]
-                ),
+                "bowling_team":
+                    str(
+                        row["bowling_team"]
+                    ),
 
-                "venue": str(
-                    row["venue"]
-                ),
+                "venue":
+                    str(
+                        row["venue"]
+                    ),
 
-                "date": str(
-                    row["date"]
-                )
+                "date":
+                    str(
+                        row["date"]
+                    )
+
             })
 
 
+        # ----------------------------------------------------
+        # Response
+        # ----------------------------------------------------
+
         return jsonify({
 
-            "status": "success",
+            "status":
+                "success",
 
-            "match_id": match_id,
+            "match_id":
+                match_id,
 
-            "count": len(result),
+            "count":
+                len(result),
 
-            "states": result
+            "states":
+                result
+
         })
+
 
     except Exception as e:
 
         return jsonify({
-            "status": "error",
-            "error": str(e)
+
+            "status":
+                "error",
+
+            "error":
+                str(e)
+
         }), 500
 
 
@@ -585,9 +837,14 @@ def get_real_sequence(
     legal_ball
 ):
 
+    # --------------------------------------------------------
+    # Get selected match
+    # --------------------------------------------------------
+
     match_df = df[
         df["match_id"] == match_id
     ].copy()
+
 
     if match_df.empty:
 
@@ -596,13 +853,21 @@ def get_real_sequence(
         )
 
 
-    # Preserve the same ordering used by training
+    # --------------------------------------------------------
+    # Preserve original training order
+    # --------------------------------------------------------
+
     match_df = match_df.sort_values(
         "_row_order"
-    ).reset_index(drop=True)
+    ).reset_index(
+        drop=True
+    )
 
 
-    # Find rows up to requested legal ball
+    # --------------------------------------------------------
+    # Get rows up to requested legal ball
+    # --------------------------------------------------------
+
     eligible = match_df[
         match_df["legal_balls"] <= legal_ball
     ].copy()
@@ -611,12 +876,18 @@ def get_real_sequence(
     if eligible.empty:
 
         raise ValueError(
+
             f"Legal ball {legal_ball} "
-            f"was not found for match {match_id}."
+            f"was not found for match "
+            f"{match_id}."
+
         )
 
 
-    # Keep the latest state for each legal ball
+    # --------------------------------------------------------
+    # Keep latest state for each legal ball
+    # --------------------------------------------------------
+
     eligible = (
         eligible
         .drop_duplicates(
@@ -626,20 +897,36 @@ def get_real_sequence(
     )
 
 
+    # --------------------------------------------------------
+    # Check if enough states exist
+    # --------------------------------------------------------
+
     if len(eligible) < checkpoint_sequence_length:
 
         raise ValueError(
+
             f"Not enough data to create a "
-            f"{checkpoint_sequence_length}-ball sequence. "
-            f"Only {len(eligible)} states are available."
+            f"{checkpoint_sequence_length}-ball "
+            f"sequence. "
+
+            f"Only {len(eligible)} states "
+            f"are available."
+
         )
 
 
+    # --------------------------------------------------------
     # Last 12 states
+    # --------------------------------------------------------
+
     sequence_df = eligible.tail(
         checkpoint_sequence_length
     )
 
+
+    # --------------------------------------------------------
+    # Extract model features
+    # --------------------------------------------------------
 
     sequence = sequence_df[
         checkpoint_features
@@ -648,14 +935,22 @@ def get_real_sequence(
     )
 
 
+    # --------------------------------------------------------
+    # Latest state
+    # --------------------------------------------------------
+
     latest_state = sequence_df.iloc[-1]
 
 
-    return sequence, latest_state
+    return (
+        sequence,
+        latest_state
+    )
 
 
 # ============================================================
 # /predict-real
+# REAL MATCH PREDICTION
 # ============================================================
 
 @app.route(
@@ -668,29 +963,61 @@ def predict_real():
 
         data = request.get_json()
 
+
+        # ----------------------------------------------------
+        # Check JSON
+        # ----------------------------------------------------
+
         if data is None:
 
             return jsonify({
-                "status": "error",
-                "error": "No JSON data received."
+
+                "status":
+                    "error",
+
+                "error":
+                    "No JSON data received."
+
             }), 400
 
+
+        # ----------------------------------------------------
+        # Check match_id
+        # ----------------------------------------------------
 
         if "match_id" not in data:
 
             return jsonify({
-                "status": "error",
-                "error": "Missing 'match_id'."
+
+                "status":
+                    "error",
+
+                "error":
+                    "Missing 'match_id'."
+
             }), 400
 
+
+        # ----------------------------------------------------
+        # Check legal_balls
+        # ----------------------------------------------------
 
         if "legal_balls" not in data:
 
             return jsonify({
-                "status": "error",
-                "error": "Missing 'legal_balls'."
+
+                "status":
+                    "error",
+
+                "error":
+                    "Missing 'legal_balls'."
+
             }), 400
 
+
+        # ----------------------------------------------------
+        # Convert input values
+        # ----------------------------------------------------
 
         match_id = int(
             data["match_id"]
@@ -701,18 +1028,36 @@ def predict_real():
         )
 
 
+        # ----------------------------------------------------
         # Create real sequence
-        sequence, state = get_real_sequence(
+        # ----------------------------------------------------
+
+        (
+            sequence,
+            state
+        ) = get_real_sequence(
+
             match_id,
             legal_ball
+
         )
 
 
-        # Predict
-        batting_probability, bowling_probability = (
-            predict_from_sequence(sequence)
+        # ----------------------------------------------------
+        # Prediction
+        # ----------------------------------------------------
+
+        (
+            batting_probability,
+            bowling_probability
+        ) = predict_from_sequence(
+            sequence
         )
 
+
+        # ----------------------------------------------------
+        # Prediction label
+        # ----------------------------------------------------
 
         if batting_probability >= 0.5:
 
@@ -723,67 +1068,87 @@ def predict_real():
             prediction = "bowling"
 
 
+        # ----------------------------------------------------
+        # Response
+        # ----------------------------------------------------
+
         return jsonify({
 
-            "status": "success",
+            "status":
+                "success",
 
-            "match_id": match_id,
+            "match_id":
+                match_id,
 
-            "legal_balls": int(
-                state["legal_balls"]
-            ),
+            "legal_balls":
+                int(
+                    state["legal_balls"]
+                ),
 
-            "over": float(
-                state["over"]
-            ),
+            "over":
+                float(
+                    state["over"]
+                ),
 
-            "date": str(
-                state["date"]
-            ),
+            "date":
+                str(
+                    state["date"]
+                ),
 
-            "venue": str(
-                state["venue"]
-            ),
+            "venue":
+                str(
+                    state["venue"]
+                ),
 
-            "batting_team": str(
-                state["batting_team"]
-            ),
+            "batting_team":
+                str(
+                    state["batting_team"]
+                ),
 
-            "bowling_team": str(
-                state["bowling_team"]
-            ),
+            "bowling_team":
+                str(
+                    state["bowling_team"]
+                ),
 
-            "score": int(
-                state["score"]
-            ),
+            "score":
+                int(
+                    state["score"]
+                ),
 
-            "wickets_lost": int(
-                state["wickets_lost"]
-            ),
+            "wickets_lost":
+                int(
+                    state["wickets_lost"]
+                ),
 
-            "wickets_remaining": int(
-                state["wickets_remaining"]
-            ),
+            "wickets_remaining":
+                int(
+                    state["wickets_remaining"]
+                ),
 
-            "target": int(
-                state["target"]
-            ),
+            "target":
+                int(
+                    state["target"]
+                ),
 
-            "runs_required": int(
-                state["runs_required"]
-            ),
+            "runs_required":
+                int(
+                    state["runs_required"]
+                ),
 
-            "balls_remaining": int(
-                state["balls_remaining"]
-            ),
+            "balls_remaining":
+                int(
+                    state["balls_remaining"]
+                ),
 
-            "current_run_rate": float(
-                state["current_run_rate"]
-            ),
+            "current_run_rate":
+                float(
+                    state["current_run_rate"]
+                ),
 
-            "required_run_rate": float(
-                state["required_run_rate"]
-            ),
+            "required_run_rate":
+                float(
+                    state["required_run_rate"]
+                ),
 
             "batting_team_win_probability":
                 round(
@@ -797,7 +1162,8 @@ def predict_real():
                     2
                 ),
 
-            "prediction": prediction
+            "prediction":
+                prediction
 
         })
 
@@ -805,9 +1171,224 @@ def predict_real():
     except Exception as e:
 
         return jsonify({
-            "status": "error",
-            "error": str(e)
+
+            "status":
+                "error",
+
+            "error":
+                str(e)
+
         }), 400
+
+
+# ============================================================
+# GET MATCH WIN PROBABILITY TREND
+# ============================================================
+
+@app.route(
+    "/match-probabilities/<int:match_id>",
+    methods=["GET"]
+)
+def get_match_probabilities(match_id):
+
+    try:
+
+        # ----------------------------------------------------
+        # Get selected match
+        # ----------------------------------------------------
+
+        match_df = df[
+            df["match_id"] == match_id
+        ].copy()
+
+
+        if match_df.empty:
+
+            return jsonify({
+
+                "status":
+                    "error",
+
+                "error":
+                    f"Match {match_id} not found."
+
+            }), 404
+
+
+        # ----------------------------------------------------
+        # Preserve original dataset order
+        # ----------------------------------------------------
+
+        match_df = match_df.sort_values(
+            "_row_order"
+        ).reset_index(
+            drop=True
+        )
+
+
+        # ----------------------------------------------------
+        # Remove duplicate legal-ball states
+        # ----------------------------------------------------
+
+        states = (
+            match_df
+            .drop_duplicates(
+                subset=["legal_balls"],
+                keep="last"
+            )
+        )
+
+
+        probabilities = []
+
+
+        # ----------------------------------------------------
+        # Calculate probability for every valid ball
+        # ----------------------------------------------------
+
+        for _, row in states.iterrows():
+
+            legal_ball = int(
+                row["legal_balls"]
+            )
+
+
+            # ------------------------------------------------
+            # Transformer needs 12 states
+            # ------------------------------------------------
+
+            if legal_ball < checkpoint_sequence_length:
+
+                continue
+
+
+            try:
+
+                # --------------------------------------------
+                # Create real sequence
+                # --------------------------------------------
+
+                (
+                    sequence,
+                    state
+                ) = get_real_sequence(
+
+                    match_id,
+                    legal_ball
+
+                )
+
+
+                # --------------------------------------------
+                # Get Transformer prediction
+                # --------------------------------------------
+
+                (
+                    batting_probability,
+                    bowling_probability
+                ) = predict_from_sequence(
+                    sequence
+                )
+
+
+                # --------------------------------------------
+                # Store result
+                # --------------------------------------------
+
+                probabilities.append({
+
+                    "legal_balls":
+                        legal_ball,
+
+                    "over":
+                        float(
+                            state["over"]
+                        ),
+
+                    "score":
+                        int(
+                            state["score"]
+                        ),
+
+                    "wickets_lost":
+                        int(
+                            state["wickets_lost"]
+                        ),
+
+                    "batting_team":
+                        str(
+                            state["batting_team"]
+                        ),
+
+                    "bowling_team":
+                        str(
+                            state["bowling_team"]
+                        ),
+
+                    "batting_team_win_probability":
+                        round(
+                            batting_probability * 100,
+                            2
+                        ),
+
+                    "bowling_team_win_probability":
+                        round(
+                            bowling_probability * 100,
+                            2
+                        )
+
+                })
+
+
+            except Exception as prediction_error:
+
+                # ------------------------------------------------
+                # If one state fails, continue with next state
+                # ------------------------------------------------
+
+                print(
+
+                    f"Skipping ball "
+                    f"{legal_ball}: "
+                    f"{prediction_error}"
+
+                )
+
+                continue
+
+
+        # ----------------------------------------------------
+        # Return all predictions
+        # ----------------------------------------------------
+
+        return jsonify({
+
+            "status":
+                "success",
+
+            "match_id":
+                match_id,
+
+            "count":
+                len(probabilities),
+
+            "probabilities":
+                probabilities
+
+        })
+
+
+    except Exception as e:
+
+        return jsonify({
+
+            "status":
+                "error",
+
+            "error":
+                str(e)
+
+        }), 500
 
 
 # ============================================================
@@ -816,27 +1397,54 @@ def predict_real():
 
 if __name__ == "__main__":
 
-    print("\n======================================")
-    print("IPL AI WIN PROBABILITY API")
-    print("======================================")
+    print(
+        "\n======================================"
+    )
 
-    print("Model:", MODEL_PATH)
-    print("Dataset:", DATA_PATH)
+    print(
+        "IPL AI WIN PROBABILITY API"
+    )
+
+    print(
+        "======================================"
+    )
+
+
+    print(
+        "Model:",
+        MODEL_PATH
+    )
+
+
+    print(
+        "Dataset:",
+        DATA_PATH
+    )
+
 
     print(
         "Sequence length:",
         checkpoint_sequence_length
     )
 
+
     print(
         "Features:",
         len(checkpoint_features)
     )
 
-    print("\nStarting Flask server...")
+
+    print(
+        "\nStarting Flask server..."
+    )
+
 
     app.run(
+
         host="0.0.0.0",
+
         port=5000,
+
         debug=True
+
     )

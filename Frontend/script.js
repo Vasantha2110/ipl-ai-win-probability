@@ -9,7 +9,7 @@
 // =====================================================
 
 const API_BASE_URL =
-     "https://ipl-ai-win-probability.onrender.com";
+    "https://ipl-ai-win-probability.onrender.com";
 
 
 // =====================================================
@@ -19,6 +19,8 @@ const API_BASE_URL =
 let matches = [];
 
 let matchStates = [];
+
+let trendProbabilities = [];
 
 let predictionHistory = [];
 
@@ -40,6 +42,7 @@ try {
         savedHistory
             ? JSON.parse(savedHistory)
             : [];
+
 
     if (!Array.isArray(predictionHistory)) {
 
@@ -160,6 +163,7 @@ const trendChartCanvas =
         "trendChart"
     );
 
+
 let probabilityChart = null;
 
 let trendChart = null;
@@ -186,6 +190,10 @@ const clearHistoryButton =
 
 function showError(message) {
 
+    if (!errorBox) {
+        return;
+    }
+
     errorBox.textContent = message;
 
     errorBox.style.display = "block";
@@ -194,6 +202,10 @@ function showError(message) {
 
 
 function hideError() {
+
+    if (!errorBox) {
+        return;
+    }
 
     errorBox.textContent = "";
 
@@ -208,6 +220,10 @@ function hideError() {
 
 function showLoading(message) {
 
+    if (!loading) {
+        return;
+    }
+
     loading.innerHTML =
         `<p>🤖 ${message}</p>`;
 
@@ -217,6 +233,10 @@ function showLoading(message) {
 
 
 function hideLoading() {
+
+    if (!loading) {
+        return;
+    }
 
     loading.style.display = "none";
 
@@ -234,6 +254,7 @@ async function loadMatches() {
     showLoading(
         "Loading IPL match data..."
     );
+
 
     try {
 
@@ -278,7 +299,9 @@ async function loadMatches() {
             data.matches || [];
 
 
-        if (matches.length === 0) {
+        if (
+            matches.length === 0
+        ) {
 
             throw new Error(
                 "No IPL matches were found."
@@ -402,6 +425,12 @@ async function handleMatchSelection() {
 
     matchStates = [];
 
+    trendProbabilities = [];
+
+
+    // Clear old trend chart
+    clearTrendChart();
+
 
     if (!matchId) {
 
@@ -423,6 +452,10 @@ async function handleMatchSelection() {
     }
 
 
+    // -------------------------------------------------
+    // Find selected match
+    // -------------------------------------------------
+
     selectedMatch =
         matches.find(
             match =>
@@ -440,7 +473,20 @@ async function handleMatchSelection() {
     }
 
 
+    // -------------------------------------------------
+    // Load match states
+    // -------------------------------------------------
+
     await loadMatchStates(
+        Number(matchId)
+    );
+
+
+    // -------------------------------------------------
+    // Load Transformer trend
+    // -------------------------------------------------
+
+    await loadTrendProbabilities(
         Number(matchId)
     );
 
@@ -456,11 +502,14 @@ function displayMatchInformation(match) {
     matchVenue.textContent =
         match.venue || "-";
 
+
     matchDate.textContent =
         match.date || "-";
 
+
     matchBattingTeam.textContent =
         match.batting_team || "-";
+
 
     matchBowlingTeam.textContent =
         match.bowling_team || "-";
@@ -526,7 +575,9 @@ async function loadMatchStates(matchId) {
             data.states || [];
 
 
-        if (matchStates.length === 0) {
+        if (
+            matchStates.length === 0
+        ) {
 
             throw new Error(
                 "No match states were found."
@@ -598,8 +649,8 @@ function populateBallDropdown() {
 
 
             option.textContent =
-                `Ball ${state.legal_balls} ` +
-                ` | Over ${state.over} ` +
+                `Ball ${state.legal_balls}` +
+                ` | Over ${state.over}` +
                 ` | ${state.score}/${state.wickets_lost}`;
 
 
@@ -628,7 +679,9 @@ function handleBallSelection() {
 
 
     const legalBall =
-        Number(ballSelect.value);
+        Number(
+            ballSelect.value
+        );
 
 
     if (
@@ -661,6 +714,7 @@ function handleBallSelection() {
         showError(
             "Could not find the selected match state."
         );
+
 
         predictButton.disabled = true;
 
@@ -719,10 +773,15 @@ function updateAnalysisFromState(state) {
 
     const pressure =
         calculatePressure(
+
             state.runs_required,
+
             state.balls_remaining,
+
             state.current_run_rate,
+
             state.required_run_rate
+
         );
 
 
@@ -805,26 +864,138 @@ function resetAnalysis() {
     currentScoreElement.textContent =
         "-";
 
+
     currentWicketsElement.textContent =
         "-";
+
 
     runsRequiredElement.textContent =
         "-";
 
+
     ballsRemainingElement.textContent =
         "-";
+
 
     currentRunRateElement.textContent =
         "-";
 
+
     requiredRunRateElement.textContent =
         "-";
+
 
     targetElement.textContent =
         "-";
 
+
     pressureValueElement.textContent =
         "-";
+
+}
+
+
+// =====================================================
+// LOAD REAL TRANSFORMER TREND
+// =====================================================
+
+async function loadTrendProbabilities(matchId) {
+
+    showLoading(
+        "Transformer AI is calculating the complete win probability trend..."
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_BASE_URL}/match-probabilities/${matchId}`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Trend API returned HTTP ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Trend API response:",
+            data
+        );
+
+
+        if (
+            data.status !== "success"
+        ) {
+
+            throw new Error(
+                data.error ||
+                "Could not load probability trend."
+            );
+
+        }
+
+
+        trendProbabilities =
+            data.probabilities || [];
+
+
+        if (
+            trendProbabilities.length === 0
+        ) {
+
+            clearTrendChart();
+
+            throw new Error(
+                "No probability trend data was returned."
+            );
+
+        }
+
+
+        // -------------------------------------------------
+        // Draw complete real trend
+        // -------------------------------------------------
+
+        updateTrendChart(
+            trendProbabilities
+        );
+
+
+        console.log(
+            `Loaded ${trendProbabilities.length} ` +
+            `real Transformer predictions.`
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Trend loading error:",
+            error
+        );
+
+
+        showError(
+            "Could not load win probability trend. " +
+            error.message
+        );
+
+
+    } finally {
+
+        hideLoading();
+
+    }
 
 }
 
@@ -972,9 +1143,9 @@ async function predictWinProbability() {
         }
 
 
-        // -------------------------------------------------
+        // =================================================
         // UPDATE RESULT
-        // -------------------------------------------------
+        // =================================================
 
         battingTeamName.textContent =
             data.batting_team;
@@ -1024,37 +1195,47 @@ async function predictWinProbability() {
             "block";
 
 
-        // -------------------------------------------------
+        // =================================================
         // UPDATE ANALYSIS
-        // -------------------------------------------------
+        // =================================================
 
         updateAnalysisFromState(
             data
         );
 
 
-        // -------------------------------------------------
+        // =================================================
         // CURRENT PROBABILITY CHART
-        // -------------------------------------------------
+        // =================================================
 
         updateProbabilityChart(
+
             data.batting_team,
+
             data.bowling_team,
+
             battingWinProbability,
+
             bowlingWinProbability
+
         );
 
 
-        // -------------------------------------------------
+        // =================================================
         // SAVE HISTORY
-        // -------------------------------------------------
+        // =================================================
 
         const pressure =
             calculatePressure(
+
                 data.runs_required,
+
                 data.balls_remaining,
+
                 data.current_run_rate,
+
                 data.required_run_rate
+
             );
 
 
@@ -1127,9 +1308,9 @@ async function predictWinProbability() {
         );
 
 
-        // -------------------------------------------------
-        // UPDATE HISTORY
-        // -------------------------------------------------
+        // =================================================
+        // UPDATE HISTORY TABLE
+        // =================================================
 
         renderHistory();
 
@@ -1164,10 +1345,15 @@ async function predictWinProbability() {
 // =====================================================
 
 function updateProbabilityChart(
+
     battingTeamValue,
+
     bowlingTeamValue,
+
     battingProbabilityValue,
+
     bowlingProbabilityValue
+
 ) {
 
     if (
@@ -1190,10 +1376,13 @@ function updateProbabilityChart(
 
     probabilityChart =
         new Chart(
+
             probabilityChartCanvas,
+
             {
 
                 type: "bar",
+
 
                 data: {
 
@@ -1204,6 +1393,7 @@ function updateProbabilityChart(
                         bowlingTeamValue
 
                     ],
+
 
                     datasets: [
 
@@ -1228,6 +1418,7 @@ function updateProbabilityChart(
 
                 },
 
+
                 options: {
 
                     responsive: true,
@@ -1252,6 +1443,7 @@ function updateProbabilityChart(
                         }
 
                     },
+
 
                     plugins: {
 
@@ -1266,25 +1458,17 @@ function updateProbabilityChart(
                 }
 
             }
+
         );
 
 }
 
 
 // =====================================================
-// TREND CHART
+// CLEAR TREND CHART
 // =====================================================
 
-function updateTrendChart() {
-
-    if (
-        !trendChartCanvas
-    ) {
-
-        return;
-
-    }
-
+function clearTrendChart() {
 
     if (
         trendChart
@@ -1296,13 +1480,19 @@ function updateTrendChart() {
 
     }
 
+}
 
-    const history =
-        [...predictionHistory].reverse();
 
+// =====================================================
+// REAL WIN PROBABILITY TREND CHART
+// =====================================================
+
+function updateTrendChart(
+    probabilities
+) {
 
     if (
-        history.length === 0
+        !trendChartCanvas
     ) {
 
         return;
@@ -1310,77 +1500,143 @@ function updateTrendChart() {
     }
 
 
+    // Destroy old chart
+    clearTrendChart();
+
+
+    if (
+        !probabilities ||
+        probabilities.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    // =================================================
+    // X-AXIS LABELS
+    // =================================================
+
     const labels =
-        history.map(
+        probabilities.map(
             item =>
-                `Ball ${item.legalBall || item.over}`
+                `Ball ${item.legal_balls}`
         );
 
+
+    // =================================================
+    // BATTING TEAM PROBABILITIES
+    // =================================================
 
     const battingProbabilities =
-        history.map(
+        probabilities.map(
             item =>
                 Number(
-                    item.battingProbability
+                    item.batting_team_win_probability
                 )
         );
 
+
+    // =================================================
+    // BOWLING TEAM PROBABILITIES
+    // =================================================
 
     const bowlingProbabilities =
-        history.map(
+        probabilities.map(
             item =>
                 Number(
-                    item.bowlingProbability
+                    item.bowling_team_win_probability
                 )
         );
 
+
+    // =================================================
+    // TEAM NAMES
+    // =================================================
+
+    const battingTeam =
+        probabilities[0].batting_team ||
+        "Batting Team";
+
+
+    const bowlingTeam =
+        probabilities[0].bowling_team ||
+        "Bowling Team";
+
+
+    // =================================================
+    // CREATE CHART
+    // =================================================
 
     trendChart =
         new Chart(
+
             trendChartCanvas,
+
             {
 
                 type: "line",
 
+
                 data: {
 
-                    labels,
+                    labels:
+
+
+                        labels,
+
 
                     datasets: [
 
                         {
 
                             label:
-                                "Batting Team Win %",
+                                `${battingTeam} Win %`,
 
                             data:
                                 battingProbabilities,
 
-                            tension: 0.3,
+                            tension:
+                                0.3,
 
-                            borderWidth: 2,
+                            borderWidth:
+                                2,
 
-                            fill: false,
+                            fill:
+                                false,
 
-                            pointRadius: 5
+                            pointRadius:
+                                2,
+
+                            pointHoverRadius:
+                                5
 
                         },
+
 
                         {
 
                             label:
-                                "Bowling Team Win %",
+                                `${bowlingTeam} Win %`,
 
                             data:
                                 bowlingProbabilities,
 
-                            tension: 0.3,
+                            tension:
+                                0.3,
 
-                            borderWidth: 2,
+                            borderWidth:
+                                2,
 
-                            fill: false,
+                            fill:
+                                false,
 
-                            pointRadius: 5
+                            pointRadius:
+                                2,
+
+                            pointHoverRadius:
+                                5
 
                         }
 
@@ -1388,11 +1644,22 @@ function updateTrendChart() {
 
                 },
 
+
                 options: {
 
                     responsive: true,
 
                     maintainAspectRatio: true,
+
+
+                    interaction: {
+
+                        mode: "index",
+
+                        intersect: false
+
+                    },
+
 
                     scales: {
 
@@ -1413,6 +1680,7 @@ function updateTrendChart() {
 
                         },
 
+
                         x: {
 
                             title: {
@@ -1420,13 +1688,24 @@ function updateTrendChart() {
                                 display: true,
 
                                 text:
-                                    "Match State"
+                                    "Legal Ball"
+
+                            },
+
+
+                            ticks: {
+
+                                // Prevent too many labels
+                                autoSkip: true,
+
+                                maxTicksLimit: 15
 
                             }
 
                         }
 
                     },
+
 
                     plugins: {
 
@@ -1435,37 +1714,99 @@ function updateTrendChart() {
                             display: true,
 
                             text:
-                                "Win Probability Trend"
+                                "Real Transformer Win Probability Trend"
 
                         },
+
+
+                        legend: {
+
+                            display: true,
+
+                            position: "top"
+
+                        },
+
 
                         tooltip: {
 
                             callbacks: {
 
-                                afterLabel:
+                                title:
                                     function(context) {
 
-                                        const item =
-                                            history[
-                                                context.dataIndex
-                                            ];
-
-
                                         if (
-                                            item.battingTeam &&
-                                            item.bowlingTeam
+                                            !context ||
+                                            context.length === 0
                                         ) {
 
-                                            return (
-                                                `${item.battingTeam} vs ` +
-                                                `${item.bowlingTeam}`
-                                            );
+                                            return "";
 
                                         }
 
 
-                                        return "";
+                                        const index =
+                                            context[0].dataIndex;
+
+
+                                        const item =
+                                            probabilities[
+                                                index
+                                            ];
+
+
+                                        if (!item) {
+
+                                            return "";
+
+                                        }
+
+
+                                        return (
+                                            `Ball ${item.legal_balls}` +
+                                            ` | Over ${item.over}`
+                                        );
+
+                                    },
+
+
+                                afterBody:
+                                    function(context) {
+
+                                        if (
+                                            !context ||
+                                            context.length === 0
+                                        ) {
+
+                                            return "";
+
+                                        }
+
+
+                                        const index =
+                                            context[0].dataIndex;
+
+
+                                        const item =
+                                            probabilities[
+                                                index
+                                            ];
+
+
+                                        if (!item) {
+
+                                            return "";
+
+                                        }
+
+
+                                        return [
+
+                                            `Score: ${item.score}/${item.wickets_lost}`,
+
+                                            `${item.batting_team} vs ${item.bowling_team}`
+
+                                        ];
 
                                     }
 
@@ -1478,6 +1819,7 @@ function updateTrendChart() {
                 }
 
             }
+
         );
 
 }
@@ -1525,8 +1867,6 @@ function renderHistory() {
         );
 
 
-        updateTrendChart();
-
         return;
 
     }
@@ -1560,7 +1900,7 @@ function renderHistory() {
                 </td>
 
                 <td>
-                    ${item.wickets || "-"}
+                    ${item.wickets ?? "-"}
                 </td>
 
                 <td>
@@ -1596,9 +1936,6 @@ function renderHistory() {
 
         }
     );
-
-
-    updateTrendChart();
 
 }
 
