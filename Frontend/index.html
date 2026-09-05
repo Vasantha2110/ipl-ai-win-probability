@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -9,345 +10,43 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>IPL AI Win Probability Predictor</title>
+    <title>IPL AI — Win Probability</title>
 
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
 
 
 <body>
 
-<div class="container">
-
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
-
-    <header>
-
-        <h1>🏏 IPL AI Win Probability Predictor</h1>
-
-        <p>
-            AI-powered cricket match win probability prediction
-            using Transformer Deep Learning
-        </p>
-
-    </header>
+<div class="app-shell">
 
 
     <!-- =====================================================
-         MATCH SELECTION
+         SIDEBAR
     ====================================================== -->
 
-    <section class="card">
+    <aside class="sidebar">
 
-        <h2>🏏 Match Details</h2>
+        <div class="brand">
 
-        <div class="form-grid">
-
-            <!-- Match -->
-
-            <div class="form-group">
-
-                <label for="matchSelect">
-                    Select IPL Match
-                </label>
-
-                <select id="matchSelect">
-
-                    <option value="">
-                        Loading matches...
-                    </option>
-
-                </select>
-
+            <div class="brand-icon">
+                🏏
             </div>
 
+            <div>
 
-            <!-- Match State -->
-
-            <div class="form-group">
-
-                <label for="ballSelect">
-                    Select Match State
-                </label>
-
-                <select
-                    id="ballSelect"
-                    disabled
-                >
-
-                    <option value="">
-                        Select a match first
-                    </option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <!-- Selected Match Information -->
-
-        <div
-            id="selectedMatchInfo"
-            class="match-info"
-            style="display:none;"
-        >
-
-            <p>
-                <strong>Venue:</strong>
-                <span id="matchVenue">-</span>
-            </p>
-
-            <p>
-                <strong>Date:</strong>
-                <span id="matchDate">-</span>
-            </p>
-
-            <p>
-                <strong>Batting:</strong>
-                <span id="matchBattingTeam">-</span>
-            </p>
-
-            <p>
-                <strong>Bowling:</strong>
-                <span id="matchBowlingTeam">-</span>
-            </p>
-
-        </div>
-
-
-        <!-- Predict Button -->
-
-        <button
-            id="predictButton"
-            disabled
-        >
-
-            🔮 Predict Win Probability
-
-        </button>
-
-
-        <!-- Loading -->
-
-        <div
-            id="loading"
-            class="loading"
-            style="display:none;"
-        >
-
-            <p>
-                🤖 Transformer AI is analyzing the match...
-            </p>
-
-        </div>
-
-
-        <!-- Error -->
-
-        <div
-            id="error"
-            class="error"
-            style="display:none;"
-        ></div>
-
-    </section>
-
-
-
-    <!-- =====================================================
-         MATCH ANALYSIS
-    ====================================================== -->
-
-    <section class="card">
-
-        <h2>📊 Match Analysis</h2>
-
-        <div class="analysis-grid">
-
-
-            <!-- Score -->
-
-            <div class="analysis-box">
-
-                <span>
-                    Current Score
-                </span>
-
-                <strong id="currentScore">
-                    -
-                </strong>
-
-            </div>
-
-
-            <!-- Wickets -->
-
-            <div class="analysis-box">
-
-                <span>
-                    Wickets Lost
-                </span>
-
-                <strong id="currentWickets">
-                    -
-                </strong>
-
-            </div>
-
-
-            <!-- Runs Required -->
-
-            <div class="analysis-box">
-
-                <span>
-                    Runs Required
-                </span>
-
-                <strong id="runsRequired">
-                    -
-                </strong>
-
-            </div>
-
-
-            <!-- Balls -->
-
-            <div class="analysis-box">
-
-                <span>
-                    Balls Remaining
-                </span>
-
-                <strong id="ballsRemaining">
-                    -
-                </strong>
-
-            </div>
-
-
-            <!-- CRR -->
-
-            <div class="analysis-box">
-
-                <span>
-                    Current Run Rate
-                </span>
-
-                <strong id="currentRunRate">
-                    -
-                </strong>
-
-            </div>
-
-
-            <!-- RRR -->
-
-            <div class="analysis-box">
-
-                <span>
-                    Required Run Rate
-                </span>
-
-                <strong id="requiredRunRate">
-                    -
-                </strong>
-
-            </div>
-
-
-            <!-- Target -->
-
-            <div class="analysis-box">
-
-                <span>
-                    Target
-                </span>
-
-                <strong id="targetValue">
-                    -
-                </strong>
-
-            </div>
-
-
-            <!-- Pressure -->
-
-            <div class="analysis-box">
-
-                <span>
-                    Match Pressure
-                </span>
-
-                <strong id="pressureValue">
-                    -
-                </strong>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =====================================================
-         PREDICTION RESULT
-    ====================================================== -->
-
-    <section
-        id="result"
-        class="card result-card"
-        style="display:none;"
-    >
-
-        <h2>
-            🏆 Prediction Result
-        </h2>
-
-
-        <div class="probability-container">
-
-
-            <!-- Batting Team -->
-
-            <div class="team-probability">
-
-                <h3 id="battingTeamName">
-                    Batting Team
-                </h3>
-
-                <div class="probability-value">
-
-                    <span id="battingProbability">
-                        0
-                    </span>%
-
+                <div class="brand-title">
+                    IPL AI
                 </div>
 
-            </div>
-
-
-            <!-- Bowling Team -->
-
-            <div class="team-probability">
-
-                <h3 id="bowlingTeamName">
-                    Bowling Team
-                </h3>
-
-                <div class="probability-value">
-
-                    <span id="bowlingProbability">
-                        0
-                    </span>%
-
+                <div class="brand-subtitle">
+                    Analytics
                 </div>
 
             </div>
@@ -355,381 +54,1066 @@
         </div>
 
 
-        <!-- Prediction Message -->
-
-        <div class="prediction-message">
-
-            <p id="predictionText">
-                Prediction will appear here.
-            </p>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =====================================================
-         CURRENT PROBABILITY CHART
-    ====================================================== -->
-
-    <section class="card">
-
-        <h2>
-            📊 Current Win Probability
-        </h2>
-
-        <div class="chart-container">
-
-            <canvas id="probabilityChart"></canvas>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =====================================================
-         TREND CHART
-    ====================================================== -->
-
-    <section class="card">
-
-        <h2>
-            📈 Win Probability Trend
-        </h2>
-
-        <p class="chart-description">
-
-            This chart shows how the predicted win probability
-            changes across the selected match.
-
-        </p>
-
-        <div class="chart-container">
-
-            <canvas id="trendChart"></canvas>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =====================================================
-         HISTORICAL MATCH REPLAY
-    ====================================================== -->
-
-    <section
-        class="card replay-card"
-        id="replaySection"
-        style="display:block;"
-    >
-
-        <h2>
-            🎬 Historical Match Replay
-        </h2>
-
-
-        <!-- Replay Status -->
-
-        <div class="replay-status">
-
-            <div>
-
-                <strong>
-                    Ball:
-                </strong>
-
-                <span id="replayBall">
-                    -
-                </span>
-
-            </div>
-
-
-            <div>
-
-                <strong>
-                    Over:
-                </strong>
-
-                <span id="replayOver">
-                    -
-                </span>
-
-            </div>
-
+        <div class="sidebar-section-title">
+            NAVIGATION
         </div>
 
 
+        <nav class="sidebar-nav">
 
-        <!-- Replay Scoreboard -->
-
-        <div class="replay-scoreboard">
-
-
-            <div class="replay-score-box">
-
-                <span>
-                    Score
-                </span>
-
-                <strong id="replayScore">
-                    -
-                </strong>
-
-            </div>
-
-
-            <div class="replay-score-box">
-
-                <span>
-                    Wickets
-                </span>
-
-                <strong id="replayWickets">
-                    -
-                </strong>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- Replay Teams and Probabilities -->
-
-        <div class="replay-probabilities">
-
-
-            <!-- Batting Team -->
-
-            <div class="replay-team replay-batting">
-
-                <h3 id="replayBattingTeam">
-                    Batting Team
-                </h3>
-
-                <strong id="replayBattingProbability">
-                    0%
-                </strong>
-
-            </div>
-
-
-            <!-- Bowling Team -->
-
-            <div class="replay-team replay-bowling">
-
-                <h3 id="replayBowlingTeam">
-                    Bowling Team
-                </h3>
-
-                <strong id="replayBowlingProbability">
-                    0%
-                </strong>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- Replay Progress -->
-
-        <div class="replay-progress-container">
-
-            <input
-                type="range"
-                id="replaySlider"
-                min="0"
-                max="0"
-                value="0"
+            <a
+                href="#dashboard"
+                class="nav-item active"
             >
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+
+            <a
+                href="#analysis"
+                class="nav-item"
+            >
+                <span class="nav-icon">▦</span>
+                <span>Match Analysis</span>
+            </a>
+
+
+            <a
+                href="#replaySection"
+                class="nav-item"
+            >
+                <span class="nav-icon">▶</span>
+                <span>Match Replay</span>
+            </a>
+
+
+            <a
+                href="#history"
+                class="nav-item"
+            >
+                <span class="nav-icon">▤</span>
+                <span>Predictions</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="ai-status">
+
+                <span class="status-dot"></span>
+
+                <div>
+
+                    <strong>
+                        Transformer AI
+                    </strong>
+
+                    <small>
+                        Prediction engine ready
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="sidebar-footer">
+
+                <span>IPL AI Predictor</span>
+
+                <span>v1.0</span>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content" id="dashboard">
+
+
+        <!-- =================================================
+             TOP HEADER
+        ================================================== -->
+
+        <header class="topbar">
+
+            <div>
+
+                <div class="eyebrow">
+                    CRICKET INTELLIGENCE PLATFORM
+                </div>
+
+                <h1>
+                    IPL Win Probability
+                </h1>
+
+                <p>
+                    AI-powered match analysis using Transformer
+                    deep learning.
+                </p>
+
+            </div>
+
+
+            <div class="topbar-status">
+
+                <span class="live-dot"></span>
+
+                AI SYSTEM ONLINE
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             MATCH SELECTION
+        ================================================== -->
+
+        <section class="dashboard-card match-selector-card">
+
+            <div class="card-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        MATCH CENTER
+                    </span>
+
+                    <h2>
+                        Select Match State
+                    </h2>
+
+                </div>
+
+
+                <div class="ai-badge">
+                    ✦ Transformer AI
+                </div>
+
+            </div>
+
+
+            <div class="selection-grid">
+
+
+                <!-- MATCH -->
+
+                <div class="input-block">
+
+                    <label for="matchSelect">
+                        IPL Match
+                    </label>
+
+                    <select id="matchSelect">
+
+                        <option value="">
+                            Loading matches...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- BALL -->
+
+                <div class="input-block">
+
+                    <label for="ballSelect">
+                        Match State
+                    </label>
+
+                    <select
+                        id="ballSelect"
+                        disabled
+                    >
+
+                        <option value="">
+                            Select a match first
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PREDICT -->
+
+                <div class="predict-action">
+
+                    <button
+                        id="predictButton"
+                        class="primary-button"
+                        disabled
+                    >
+
+                        <span>✦</span>
+
+                        Predict Probability
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- MATCH INFORMATION -->
 
             <div
-                id="replayProgress"
-                class="replay-progress-text"
+                id="selectedMatchInfo"
+                class="match-information"
+                style="display:none;"
             >
-                0 / 0
+
+                <div class="match-info-item">
+
+                    <span>VENUE</span>
+
+                    <strong id="matchVenue">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="match-info-item">
+
+                    <span>DATE</span>
+
+                    <strong id="matchDate">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="match-info-item">
+
+                    <span>BATTING</span>
+
+                    <strong id="matchBattingTeam">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="match-info-item">
+
+                    <span>BOWLING</span>
+
+                    <strong id="matchBowlingTeam">
+                        -
+                    </strong>
+
+                </div>
+
             </div>
 
-        </div>
 
+            <!-- LOADING -->
 
-
-        <!-- Replay Controls -->
-
-        <div class="replay-controls">
-
-
-            <button id="previousBallButton">
-                ◀ Previous
-            </button>
-
-
-            <button id="startReplayButton">
-                ▶ Start Replay
-            </button>
-
-
-            <button id="pauseReplayButton">
-                ⏸ Pause
-            </button>
-
-
-            <button id="nextBallButton">
-                Next ▶
-            </button>
-
-
-            <button id="restartReplayButton">
-                ↻ Restart
-            </button>
-
-        </div>
-
-
-
-        <!-- Replay Speed -->
-
-        <div class="replay-speed">
-
-            <label for="replaySpeed">
-                Replay Speed:
-            </label>
-
-
-            <select id="replaySpeed">
-
-                <option value="2000">
-                    0.5x
-                </option>
-
-                <option
-                    value="1000"
-                    selected
-                >
-                    1x
-                </option>
-
-                <option value="500">
-                    2x
-                </option>
-
-                <option value="250">
-                    4x
-                </option>
-
-            </select>
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- =====================================================
-         PREDICTION HISTORY
-    ====================================================== -->
-
-    <section class="card">
-
-        <div class="history-header">
-
-            <h2>
-                📋 Prediction History
-            </h2>
-
-
-            <button
-                id="clearHistory"
-                class="clear-button"
+            <div
+                id="loading"
+                class="loading"
+                style="display:none;"
             >
 
-                🗑️ Clear History
+                <p>
+                    🤖 Transformer AI is analyzing the match...
+                </p>
 
-            </button>
+            </div>
+
+
+            <!-- ERROR -->
+
+            <div
+                id="error"
+                class="error"
+                style="display:none;"
+            ></div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             AI PREDICTION HERO
+        ================================================== -->
+
+        <section
+            id="result"
+            class="dashboard-card prediction-card"
+            style="display:none;"
+        >
+
+            <div class="prediction-header">
+
+                <div>
+
+                    <span class="section-label">
+                        AI PREDICTION
+                    </span>
+
+                    <h2>
+                        Win Probability
+                    </h2>
+
+                </div>
+
+
+                <div class="prediction-live">
+                    ● LIVE ANALYSIS
+                </div>
+
+            </div>
+
+
+            <div class="probability-container">
+
+
+                <!-- BATTING TEAM -->
+
+                <div class="team-probability prediction-team">
+
+                    <span class="team-role">
+                        BATTING TEAM
+                    </span>
+
+                    <h3 id="battingTeamName">
+                        Batting Team
+                    </h3>
+
+                    <div class="probability-value">
+
+                        <span id="battingProbability">
+                            0
+                        </span>%
+
+                    </div>
+
+                    <div class="probability-bar">
+
+                        <div
+                            class="probability-fill batting-fill"
+                            id="battingProbabilityBar"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- VS -->
+
+                <div class="prediction-vs">
+
+                    <span>AI</span>
+
+                    <strong>VS</strong>
+
+                    <span>MODEL</span>
+
+                </div>
+
+
+
+                <!-- BOWLING TEAM -->
+
+                <div class="team-probability prediction-team">
+
+                    <span class="team-role">
+                        BOWLING TEAM
+                    </span>
+
+                    <h3 id="bowlingTeamName">
+                        Bowling Team
+                    </h3>
+
+                    <div class="probability-value">
+
+                        <span id="bowlingProbability">
+                            0
+                        </span>%
+
+                    </div>
+
+                    <div class="probability-bar">
+
+                        <div
+                            class="probability-fill bowling-fill"
+                            id="bowlingProbabilityBar"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="prediction-message">
+
+                <span class="message-icon">
+                    ✦
+                </span>
+
+                <p id="predictionText">
+                    Prediction will appear here.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             MATCH ANALYSIS
+        ================================================== -->
+
+        <section
+            id="analysis"
+            class="dashboard-card"
+        >
+
+            <div class="card-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        MATCH ANALYTICS
+                    </span>
+
+                    <h2>
+                        Current Match State
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="analysis-grid">
+
+
+                <!-- SCORE -->
+
+                <div class="analysis-box">
+
+                    <span class="stat-icon">
+                        ◎
+                    </span>
+
+                    <span class="stat-label">
+                        CURRENT SCORE
+                    </span>
+
+                    <strong id="currentScore">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- WICKETS -->
+
+                <div class="analysis-box">
+
+                    <span class="stat-icon">
+                        ◈
+                    </span>
+
+                    <span class="stat-label">
+                        WICKETS LOST
+                    </span>
+
+                    <strong id="currentWickets">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- RUNS REQUIRED -->
+
+                <div class="analysis-box">
+
+                    <span class="stat-icon">
+                        ↗
+                    </span>
+
+                    <span class="stat-label">
+                        RUNS REQUIRED
+                    </span>
+
+                    <strong id="runsRequired">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- BALLS -->
+
+                <div class="analysis-box">
+
+                    <span class="stat-icon">
+                        ◷
+                    </span>
+
+                    <span class="stat-label">
+                        BALLS REMAINING
+                    </span>
+
+                    <strong id="ballsRemaining">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- CRR -->
+
+                <div class="analysis-box">
+
+                    <span class="stat-icon">
+                        ≈
+                    </span>
+
+                    <span class="stat-label">
+                        CURRENT RUN RATE
+                    </span>
+
+                    <strong id="currentRunRate">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- RRR -->
+
+                <div class="analysis-box">
+
+                    <span class="stat-icon">
+                        ⇧
+                    </span>
+
+                    <span class="stat-label">
+                        REQUIRED RUN RATE
+                    </span>
+
+                    <strong id="requiredRunRate">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- TARGET -->
+
+                <div class="analysis-box">
+
+                    <span class="stat-icon">
+                        ◎
+                    </span>
+
+                    <span class="stat-label">
+                        TARGET
+                    </span>
+
+                    <strong id="targetValue">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- PRESSURE -->
+
+                <div class="analysis-box pressure-box">
+
+                    <span class="stat-icon">
+                        ⚡
+                    </span>
+
+                    <span class="stat-label">
+                        MATCH PRESSURE
+                    </span>
+
+                    <strong id="pressureValue">
+                        -
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             CHARTS
+        ================================================== -->
+
+        <div class="charts-grid">
+
+
+            <!-- CURRENT PROBABILITY -->
+
+            <section class="dashboard-card chart-card">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            PREDICTION
+                        </span>
+
+                        <h2>
+                            Current Win Probability
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="chart-container">
+
+                    <canvas
+                        id="probabilityChart"
+                    ></canvas>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- TREND -->
+
+            <section class="dashboard-card chart-card trend-card">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            TRANSFORMER ANALYSIS
+                        </span>
+
+                        <h2>
+                            Win Probability Trend
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <p class="chart-description">
+
+                    Real Transformer predictions across
+                    the selected match state.
+
+                </p>
+
+
+                <div class="chart-container">
+
+                    <canvas
+                        id="trendChart"
+                    ></canvas>
+
+                </div>
+
+            </section>
 
         </div>
 
 
-        <div class="table-container">
 
-            <table>
+        <!-- =================================================
+             HISTORICAL REPLAY
+        ================================================== -->
 
-                <thead>
+        <section
+            class="dashboard-card replay-card"
+            id="replaySection"
+            style="display:block;"
+        >
 
-                    <tr>
+            <div class="card-heading">
 
-                        <th>#</th>
+                <div>
 
-                        <th>Match</th>
+                    <span class="section-label">
+                        BALL-BY-BALL SIMULATION
+                    </span>
 
-                        <th>Over</th>
+                    <h2>
+                        Historical Match Replay
+                    </h2>
 
-                        <th>Score</th>
-
-                        <th>Wickets</th>
-
-                        <th>Batting Team</th>
-
-                        <th>Bowling Team</th>
-
-                        <th>Batting Win %</th>
-
-                        <th>Bowling Win %</th>
-
-                        <th>Pressure</th>
-
-                        <th>Date & Time</th>
-
-                    </tr>
-
-                </thead>
+                </div>
 
 
-                <tbody id="historyBody">
+                <div class="replay-live-badge">
+                    ● REPLAY MODE
+                </div>
 
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </section>
+            </div>
 
 
+            <!-- REPLAY STATUS -->
 
-    <!-- =====================================================
-         FOOTER
-    ====================================================== -->
+            <div class="replay-status">
 
-    <footer>
+                <div>
 
-        <p>
-            🏏 IPL AI Win Probability Predictor
-        </p>
+                    <span>
+                        BALL
+                    </span>
 
-        <p>
-            Powered by Transformer Deep Learning + Flask API
-        </p>
+                    <strong id="replayBall">
+                        -
+                    </strong>
 
-    </footer>
+                </div>
 
+
+                <div>
+
+                    <span>
+                        OVER
+                    </span>
+
+                    <strong id="replayOver">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        PROGRESS
+                    </span>
+
+                    <strong id="replayProgress">
+                        0 / 0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- REPLAY SCORE -->
+
+            <div class="replay-scoreboard">
+
+
+                <div class="replay-score-box">
+
+                    <span>
+                        SCORE
+                    </span>
+
+                    <strong id="replayScore">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="replay-score-box">
+
+                    <span>
+                        WICKETS
+                    </span>
+
+                    <strong id="replayWickets">
+                        -
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- REPLAY PROBABILITY -->
+
+            <div class="replay-probabilities">
+
+
+                <div class="replay-team replay-batting">
+
+                    <span>
+                        BATTING TEAM
+                    </span>
+
+                    <h3 id="replayBattingTeam">
+                        Batting Team
+                    </h3>
+
+                    <strong id="replayBattingProbability">
+                        0%
+                    </strong>
+
+                </div>
+
+
+                <div class="replay-center">
+                    AI
+                </div>
+
+
+                <div class="replay-team replay-bowling">
+
+                    <span>
+                        BOWLING TEAM
+                    </span>
+
+                    <h3 id="replayBowlingTeam">
+                        Bowling Team
+                    </h3>
+
+                    <strong id="replayBowlingProbability">
+                        0%
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SLIDER -->
+
+            <div class="replay-progress-container">
+
+                <input
+                    type="range"
+                    id="replaySlider"
+                    min="0"
+                    max="0"
+                    value="0"
+                >
+
+            </div>
+
+
+
+            <!-- CONTROLS -->
+
+            <div class="replay-controls">
+
+                <button id="previousBallButton">
+                    ◀
+                </button>
+
+
+                <button
+                    id="startReplayButton"
+                    class="primary-button"
+                >
+                    ▶ Start Replay
+                </button>
+
+
+                <button id="pauseReplayButton">
+                    ⏸ Pause
+                </button>
+
+
+                <button id="nextBallButton">
+                    ▶
+                </button>
+
+
+                <button id="restartReplayButton">
+                    ↻
+                </button>
+
+            </div>
+
+
+
+            <!-- SPEED -->
+
+            <div class="replay-speed">
+
+                <label for="replaySpeed">
+                    Replay Speed
+                </label>
+
+
+                <select id="replaySpeed">
+
+                    <option value="2000">
+                        0.5x
+                    </option>
+
+                    <option
+                        value="1000"
+                        selected
+                    >
+                        1x
+                    </option>
+
+                    <option value="500">
+                        2x
+                    </option>
+
+                    <option value="250">
+                        4x
+                    </option>
+
+                </select>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PREDICTION HISTORY
+        ================================================== -->
+
+        <section
+            class="dashboard-card history-card"
+            id="history"
+        >
+
+            <div class="history-header">
+
+                <div>
+
+                    <span class="section-label">
+                        AI ACTIVITY
+                    </span>
+
+                    <h2>
+                        Prediction History
+                    </h2>
+
+                </div>
+
+
+                <button
+                    id="clearHistory"
+                    class="clear-button"
+                >
+                    Clear History
+                </button>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>Match</th>
+
+                            <th>Over</th>
+
+                            <th>Score</th>
+
+                            <th>Wickets</th>
+
+                            <th>Batting</th>
+
+                            <th>Bowling</th>
+
+                            <th>Batting Win %</th>
+
+                            <th>Bowling Win %</th>
+
+                            <th>Pressure</th>
+
+                            <th>Date & Time</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="historyBody">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer class="dashboard-footer">
+
+            <div>
+
+                <strong>
+                    IPL AI Win Probability
+                </strong>
+
+                <span>
+                    Transformer-powered cricket analytics
+                </span>
+
+            </div>
+
+
+            <div>
+                Flask API · PyTorch · Chart.js
+            </div>
+
+        </footer>
+
+
+    </main>
 
 </div>
 
 
 
-<!-- =====================================================
-     JAVASCRIPT
-====================================================== -->
-
 <script src="script.js"></script>
-
 
 </body>
 
