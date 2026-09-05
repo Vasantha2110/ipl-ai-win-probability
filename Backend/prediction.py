@@ -330,6 +330,13 @@ app = Flask(__name__)
 # Enable CORS so the deployed frontend can communicate
 # with the deployed Flask backend.
 CORS(app)
+
+# ============================================================
+# CRICKETDATA CONFIGURATION
+# ============================================================
+
+# Keep the API key in Render Environment Variables.
+# Never hard-code the API key in this file.
 CRICKET_API_KEY = os.getenv("CRICKET_API_KEY")
 CRICKET_API_BASE = "https://api.cricapi.com/v1"
 
@@ -1393,6 +1400,8 @@ def get_match_probabilities(match_id):
                 str(e)
 
         }), 500
+
+
 # ============================================================
 # LIVE CRICKET DATA
 # ============================================================
@@ -1422,6 +1431,59 @@ def get_live_matches():
         data = response.json()
 
         return jsonify(data)
+
+    except requests.RequestException as e:
+
+        return jsonify({
+            "status": "error",
+            "error": f"CricketData request failed: {str(e)}"
+        }), 502
+
+    except Exception as e:
+
+        return jsonify({
+            "status": "error",
+            "error": str(e)
+        }), 500
+
+
+# ============================================================
+# LIVE MATCH SCORECARD
+# ============================================================
+
+@app.route("/live-scorecard/<match_id>", methods=["GET"])
+def get_live_scorecard(match_id):
+
+    try:
+
+        if not CRICKET_API_KEY:
+            return jsonify({
+                "status": "error",
+                "error": "CRICKET_API_KEY is not configured."
+            }), 500
+
+        response = requests.get(
+            f"{CRICKET_API_BASE}/match_scorecard",
+            params={
+                "apikey": CRICKET_API_KEY,
+                "offset": 0,
+                "id": match_id
+            },
+            timeout=20
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        return jsonify(data)
+
+    except requests.RequestException as e:
+
+        return jsonify({
+            "status": "error",
+            "error": f"CricketData request failed: {str(e)}"
+        }), 502
 
     except Exception as e:
 
