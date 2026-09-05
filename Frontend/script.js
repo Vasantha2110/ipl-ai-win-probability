@@ -291,6 +291,22 @@ const bowlingProbability =
     );
 
 
+// =====================================================
+// PROBABILITY BAR ELEMENTS
+// =====================================================
+
+const battingProbabilityBar =
+    document.getElementById(
+        "battingProbabilityBar"
+    );
+
+
+const bowlingProbabilityBar =
+    document.getElementById(
+        "bowlingProbabilityBar"
+    );
+
+
 const predictionText =
     document.getElementById(
         "predictionText"
@@ -694,8 +710,6 @@ async function handleMatchSelection() {
     }
 
 
-    // Clear old trend chart
-
     clearTrendChart();
 
 
@@ -723,6 +737,8 @@ async function handleMatchSelection() {
 
 
         resetAnalysis();
+
+        resetProbabilityBars();
 
         return;
 
@@ -1029,6 +1045,8 @@ function handleBallSelection() {
 
         resetAnalysis();
 
+        resetProbabilityBars();
+
         return;
 
     }
@@ -1328,6 +1346,72 @@ function resetAnalysis() {
 
 
 // =====================================================
+// RESET PROBABILITY BARS
+// =====================================================
+
+function resetProbabilityBars() {
+
+    if (battingProbabilityBar) {
+
+        battingProbabilityBar.style.width =
+            "0%";
+
+    }
+
+
+    if (bowlingProbabilityBar) {
+
+        bowlingProbabilityBar.style.width =
+            "0%";
+
+    }
+
+}
+
+
+// =====================================================
+// UPDATE PROBABILITY BARS
+// =====================================================
+
+function updateProbabilityBars(
+
+    battingValue,
+
+    bowlingValue
+
+) {
+
+    if (battingProbabilityBar) {
+
+        battingProbabilityBar.style.width =
+            `${Math.max(
+                0,
+                Math.min(
+                    100,
+                    battingValue
+                )
+            )}%`;
+
+    }
+
+
+    if (bowlingProbabilityBar) {
+
+        bowlingProbabilityBar.style.width =
+            `${Math.max(
+                0,
+                Math.min(
+                    100,
+                    bowlingValue
+                )
+            )}%`;
+
+    }
+
+}
+
+
+// =====================================================
 // LOAD REAL TRANSFORMER TREND
 // =====================================================
 
@@ -1398,18 +1482,10 @@ async function loadTrendProbabilities(
         }
 
 
-        // =================================================
-        // DRAW COMPLETE REAL TREND
-        // =================================================
-
         updateTrendChart(
             trendProbabilities
         );
 
-
-        // =================================================
-        // INITIALIZE HISTORICAL REPLAY
-        // =================================================
 
         initializeReplay();
 
@@ -1818,6 +1894,19 @@ function displayPredictionResult(
             bowlingProbabilityValue.toFixed(2);
 
     }
+
+
+    // =================================================
+    // UPDATE PROBABILITY BARS
+    // =================================================
+
+    updateProbabilityBars(
+
+        battingProbabilityValue,
+
+        bowlingProbabilityValue
+
+    );
 
 
     if (predictionText) {
@@ -2665,6 +2754,19 @@ function renderReplayState() {
 
 
     // =================================================
+    // UPDATE MAIN PROBABILITY BARS DURING REPLAY
+    // =================================================
+
+    updateProbabilityBars(
+
+        battingProbabilityValue,
+
+        bowlingProbabilityValue
+
+    );
+
+
+    // =================================================
     // PROGRESS
     // =================================================
 
@@ -3079,8 +3181,6 @@ function changeReplaySpeed() {
 
 
     if (wasRunning) {
-
-        // Restart timer with new speed
 
         startReplay();
 
