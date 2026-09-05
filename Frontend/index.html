@@ -22,7 +22,6 @@
 
 <div class="container">
 
-
     <!-- =====================================================
          HEADER
     ====================================================== -->
@@ -39,7 +38,6 @@
     </header>
 
 
-
     <!-- =====================================================
          MATCH SELECTION
     ====================================================== -->
@@ -48,9 +46,7 @@
 
         <h2>🏏 Match Details</h2>
 
-
         <div class="form-grid">
-
 
             <!-- Match -->
 
@@ -69,7 +65,6 @@
                 </select>
 
             </div>
-
 
 
             <!-- Match State -->
@@ -93,9 +88,7 @@
 
             </div>
 
-
         </div>
-
 
 
         <!-- Selected Match Information -->
@@ -129,7 +122,6 @@
         </div>
 
 
-
         <!-- Predict Button -->
 
         <button
@@ -140,7 +132,6 @@
             🔮 Predict Win Probability
 
         </button>
-
 
 
         <!-- Loading -->
@@ -158,7 +149,6 @@
         </div>
 
 
-
         <!-- Error -->
 
         <div
@@ -166,7 +156,6 @@
             class="error"
             style="display:none;"
         ></div>
-
 
     </section>
 
@@ -179,7 +168,6 @@
     <section class="card">
 
         <h2>📊 Match Analysis</h2>
-
 
         <div class="analysis-grid">
 
@@ -199,7 +187,6 @@
             </div>
 
 
-
             <!-- Wickets -->
 
             <div class="analysis-box">
@@ -213,7 +200,6 @@
                 </strong>
 
             </div>
-
 
 
             <!-- Runs Required -->
@@ -231,7 +217,6 @@
             </div>
 
 
-
             <!-- Balls -->
 
             <div class="analysis-box">
@@ -245,7 +230,6 @@
                 </strong>
 
             </div>
-
 
 
             <!-- CRR -->
@@ -263,7 +247,6 @@
             </div>
 
 
-
             <!-- RRR -->
 
             <div class="analysis-box">
@@ -279,7 +262,6 @@
             </div>
 
 
-
             <!-- Target -->
 
             <div class="analysis-box">
@@ -293,7 +275,6 @@
                 </strong>
 
             </div>
-
 
 
             <!-- Pressure -->
@@ -342,7 +323,6 @@
                     Batting Team
                 </h3>
 
-
                 <div class="probability-value">
 
                     <span id="battingProbability">
@@ -354,7 +334,6 @@
             </div>
 
 
-
             <!-- Bowling Team -->
 
             <div class="team-probability">
@@ -362,7 +341,6 @@
                 <h3 id="bowlingTeamName">
                     Bowling Team
                 </h3>
-
 
                 <div class="probability-value">
 
@@ -375,7 +353,6 @@
             </div>
 
         </div>
-
 
 
         <!-- Prediction Message -->
@@ -402,7 +379,6 @@
             📊 Current Win Probability
         </h2>
 
-
         <div class="chart-container">
 
             <canvas id="probabilityChart"></canvas>
@@ -423,14 +399,12 @@
             📈 Win Probability Trend
         </h2>
 
-
         <p class="chart-description">
 
             This chart shows how the predicted win probability
             changes across the selected match.
 
         </p>
-
 
         <div class="chart-container">
 
@@ -443,11 +417,225 @@
 
 
     <!-- =====================================================
+         HISTORICAL MATCH REPLAY
+    ====================================================== -->
+
+    <section
+        class="card replay-card"
+        id="replaySection"
+        style="display:block;"
+    >
+
+        <h2>
+            🎬 Historical Match Replay
+        </h2>
+
+
+        <!-- Replay Status -->
+
+        <div class="replay-status">
+
+            <div>
+
+                <strong>
+                    Ball:
+                </strong>
+
+                <span id="replayBall">
+                    -
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    Over:
+                </strong>
+
+                <span id="replayOver">
+                    -
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Replay Scoreboard -->
+
+        <div class="replay-scoreboard">
+
+
+            <div class="replay-score-box">
+
+                <span>
+                    Score
+                </span>
+
+                <strong id="replayScore">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="replay-score-box">
+
+                <span>
+                    Wickets
+                </span>
+
+                <strong id="replayWickets">
+                    -
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Replay Teams and Probabilities -->
+
+        <div class="replay-probabilities">
+
+
+            <!-- Batting Team -->
+
+            <div class="replay-team replay-batting">
+
+                <h3 id="replayBattingTeam">
+                    Batting Team
+                </h3>
+
+                <strong id="replayBattingProbability">
+                    0%
+                </strong>
+
+            </div>
+
+
+            <!-- Bowling Team -->
+
+            <div class="replay-team replay-bowling">
+
+                <h3 id="replayBowlingTeam">
+                    Bowling Team
+                </h3>
+
+                <strong id="replayBowlingProbability">
+                    0%
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Replay Progress -->
+
+        <div class="replay-progress-container">
+
+            <input
+                type="range"
+                id="replaySlider"
+                min="0"
+                max="0"
+                value="0"
+            >
+
+            <div
+                id="replayProgress"
+                class="replay-progress-text"
+            >
+                0 / 0
+            </div>
+
+        </div>
+
+
+
+        <!-- Replay Controls -->
+
+        <div class="replay-controls">
+
+
+            <button id="previousBallButton">
+                ◀ Previous
+            </button>
+
+
+            <button id="startReplayButton">
+                ▶ Start Replay
+            </button>
+
+
+            <button id="pauseReplayButton">
+                ⏸ Pause
+            </button>
+
+
+            <button id="nextBallButton">
+                Next ▶
+            </button>
+
+
+            <button id="restartReplayButton">
+                ↻ Restart
+            </button>
+
+        </div>
+
+
+
+        <!-- Replay Speed -->
+
+        <div class="replay-speed">
+
+            <label for="replaySpeed">
+                Replay Speed:
+            </label>
+
+
+            <select id="replaySpeed">
+
+                <option value="2000">
+                    0.5x
+                </option>
+
+                <option
+                    value="1000"
+                    selected
+                >
+                    1x
+                </option>
+
+                <option value="500">
+                    2x
+                </option>
+
+                <option value="250">
+                    4x
+                </option>
+
+            </select>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
          PREDICTION HISTORY
     ====================================================== -->
 
     <section class="card">
-
 
         <div class="history-header">
 
@@ -466,7 +654,6 @@
             </button>
 
         </div>
-
 
 
         <div class="table-container">
@@ -536,7 +723,10 @@
 </div>
 
 
-<!-- JavaScript -->
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
 
 <script src="script.js"></script>
 

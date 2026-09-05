@@ -1,6 +1,7 @@
 // =====================================================
 // IPL AI WIN PROBABILITY PREDICTOR
 // Real IPL Match Data + Transformer Model
+// Historical Match Replay
 // =====================================================
 
 
@@ -30,13 +31,29 @@ let selectedState = null;
 
 
 // =====================================================
+// HISTORICAL MATCH REPLAY
+// =====================================================
+
+let replayData = [];
+
+let replayIndex = 0;
+
+let replayTimer = null;
+
+let replayInterval = 1000;
+
+
+// =====================================================
 // LOAD SAVED HISTORY
 // =====================================================
 
 try {
 
     const savedHistory =
-        localStorage.getItem("predictionHistory");
+        localStorage.getItem(
+            "predictionHistory"
+        );
+
 
     predictionHistory =
         savedHistory
@@ -44,7 +61,11 @@ try {
             : [];
 
 
-    if (!Array.isArray(predictionHistory)) {
+    if (
+        !Array.isArray(
+            predictionHistory
+        )
+    ) {
 
         predictionHistory = [];
 
@@ -67,37 +88,179 @@ try {
 // =====================================================
 
 const matchSelect =
-    document.getElementById("matchSelect");
+    document.getElementById(
+        "matchSelect"
+    );
+
 
 const ballSelect =
-    document.getElementById("ballSelect");
+    document.getElementById(
+        "ballSelect"
+    );
+
 
 const selectedMatchInfo =
-    document.getElementById("selectedMatchInfo");
+    document.getElementById(
+        "selectedMatchInfo"
+    );
+
 
 const matchVenue =
-    document.getElementById("matchVenue");
+    document.getElementById(
+        "matchVenue"
+    );
+
 
 const matchDate =
-    document.getElementById("matchDate");
+    document.getElementById(
+        "matchDate"
+    );
+
 
 const matchBattingTeam =
-    document.getElementById("matchBattingTeam");
+    document.getElementById(
+        "matchBattingTeam"
+    );
+
 
 const matchBowlingTeam =
-    document.getElementById("matchBowlingTeam");
+    document.getElementById(
+        "matchBowlingTeam"
+    );
+
 
 const predictButton =
-    document.getElementById("predictButton");
+    document.getElementById(
+        "predictButton"
+    );
+
+
+// =====================================================
+// REPLAY ELEMENTS
+// =====================================================
+
+const replaySection =
+    document.getElementById(
+        "replaySection"
+    );
+
+
+const replayBall =
+    document.getElementById(
+        "replayBall"
+    );
+
+
+const replayOver =
+    document.getElementById(
+        "replayOver"
+    );
+
+
+const replayScore =
+    document.getElementById(
+        "replayScore"
+    );
+
+
+const replayWickets =
+    document.getElementById(
+        "replayWickets"
+    );
+
+
+const replayBattingTeam =
+    document.getElementById(
+        "replayBattingTeam"
+    );
+
+
+const replayBowlingTeam =
+    document.getElementById(
+        "replayBowlingTeam"
+    );
+
+
+const replayBattingProbability =
+    document.getElementById(
+        "replayBattingProbability"
+    );
+
+
+const replayBowlingProbability =
+    document.getElementById(
+        "replayBowlingProbability"
+    );
+
+
+const replaySlider =
+    document.getElementById(
+        "replaySlider"
+    );
+
+
+const replayProgress =
+    document.getElementById(
+        "replayProgress"
+    );
+
+
+const previousBallButton =
+    document.getElementById(
+        "previousBallButton"
+    );
+
+
+const startReplayButton =
+    document.getElementById(
+        "startReplayButton"
+    );
+
+
+const pauseReplayButton =
+    document.getElementById(
+        "pauseReplayButton"
+    );
+
+
+const nextBallButton =
+    document.getElementById(
+        "nextBallButton"
+    );
+
+
+const restartReplayButton =
+    document.getElementById(
+        "restartReplayButton"
+    );
+
+
+const replaySpeed =
+    document.getElementById(
+        "replaySpeed"
+    );
+
+
+// =====================================================
+// LOADING / ERROR
+// =====================================================
 
 const loading =
-    document.getElementById("loading");
+    document.getElementById(
+        "loading"
+    );
+
 
 const errorBox =
-    document.getElementById("error");
+    document.getElementById(
+        "error"
+    );
+
 
 const result =
-    document.getElementById("result");
+    document.getElementById(
+        "result"
+    );
 
 
 // =====================================================
@@ -105,19 +268,33 @@ const result =
 // =====================================================
 
 const battingTeamName =
-    document.getElementById("battingTeamName");
+    document.getElementById(
+        "battingTeamName"
+    );
+
 
 const bowlingTeamName =
-    document.getElementById("bowlingTeamName");
+    document.getElementById(
+        "bowlingTeamName"
+    );
+
 
 const battingProbability =
-    document.getElementById("battingProbability");
+    document.getElementById(
+        "battingProbability"
+    );
+
 
 const bowlingProbability =
-    document.getElementById("bowlingProbability");
+    document.getElementById(
+        "bowlingProbability"
+    );
+
 
 const predictionText =
-    document.getElementById("predictionText");
+    document.getElementById(
+        "predictionText"
+    );
 
 
 // =====================================================
@@ -125,28 +302,51 @@ const predictionText =
 // =====================================================
 
 const currentScoreElement =
-    document.getElementById("currentScore");
+    document.getElementById(
+        "currentScore"
+    );
+
 
 const currentWicketsElement =
-    document.getElementById("currentWickets");
+    document.getElementById(
+        "currentWickets"
+    );
+
 
 const runsRequiredElement =
-    document.getElementById("runsRequired");
+    document.getElementById(
+        "runsRequired"
+    );
+
 
 const ballsRemainingElement =
-    document.getElementById("ballsRemaining");
+    document.getElementById(
+        "ballsRemaining"
+    );
+
 
 const currentRunRateElement =
-    document.getElementById("currentRunRate");
+    document.getElementById(
+        "currentRunRate"
+    );
+
 
 const requiredRunRateElement =
-    document.getElementById("requiredRunRate");
+    document.getElementById(
+        "requiredRunRate"
+    );
+
 
 const targetElement =
-    document.getElementById("targetValue");
+    document.getElementById(
+        "targetValue"
+    );
+
 
 const pressureValueElement =
-    document.getElementById("pressureValue");
+    document.getElementById(
+        "pressureValue"
+    );
 
 
 // =====================================================
@@ -157,6 +357,7 @@ const probabilityChartCanvas =
     document.getElementById(
         "probabilityChart"
     );
+
 
 const trendChartCanvas =
     document.getElementById(
@@ -178,6 +379,7 @@ const historyBody =
         "historyBody"
     );
 
+
 const clearHistoryButton =
     document.getElementById(
         "clearHistory"
@@ -191,12 +393,18 @@ const clearHistoryButton =
 function showError(message) {
 
     if (!errorBox) {
+
         return;
+
     }
 
-    errorBox.textContent = message;
 
-    errorBox.style.display = "block";
+    errorBox.textContent =
+        message;
+
+
+    errorBox.style.display =
+        "block";
 
 }
 
@@ -204,12 +412,18 @@ function showError(message) {
 function hideError() {
 
     if (!errorBox) {
+
         return;
+
     }
 
-    errorBox.textContent = "";
 
-    errorBox.style.display = "none";
+    errorBox.textContent =
+        "";
+
+
+    errorBox.style.display =
+        "none";
 
 }
 
@@ -221,13 +435,18 @@ function hideError() {
 function showLoading(message) {
 
     if (!loading) {
+
         return;
+
     }
+
 
     loading.innerHTML =
         `<p>🤖 ${message}</p>`;
 
-    loading.style.display = "block";
+
+    loading.style.display =
+        "block";
 
 }
 
@@ -235,10 +454,14 @@ function showLoading(message) {
 function hideLoading() {
 
     if (!loading) {
+
         return;
+
     }
 
-    loading.style.display = "none";
+
+    loading.style.display =
+        "none";
 
 }
 
@@ -250,6 +473,7 @@ function hideLoading() {
 async function loadMatches() {
 
     hideError();
+
 
     showLoading(
         "Loading IPL match data..."
@@ -284,7 +508,8 @@ async function loadMatches() {
 
 
         if (
-            data.status !== "success"
+            data.status !==
+            "success"
         ) {
 
             throw new Error(
@@ -327,13 +552,17 @@ async function loadMatches() {
         );
 
 
-        matchSelect.innerHTML = `
+        if (matchSelect) {
 
-            <option value="">
-                Unable to load matches
-            </option>
+            matchSelect.innerHTML = `
 
-        `;
+                <option value="">
+                    Unable to load matches
+                </option>
+
+            `;
+
+        }
 
 
     } finally {
@@ -350,6 +579,13 @@ async function loadMatches() {
 // =====================================================
 
 function populateMatchDropdown() {
+
+    if (!matchSelect) {
+
+        return;
+
+    }
+
 
     matchSelect.innerHTML = `
 
@@ -398,25 +634,42 @@ async function handleMatchSelection() {
 
     hideError();
 
-    result.style.display = "none";
+
+    stopReplay();
+
+
+    if (result) {
+
+        result.style.display =
+            "none";
+
+    }
 
 
     const matchId =
         matchSelect.value;
 
 
-    ballSelect.innerHTML = `
+    if (ballSelect) {
 
-        <option value="">
-            Loading match states...
-        </option>
+        ballSelect.innerHTML = `
 
-    `;
+            <option value="">
+                Loading match states...
+            </option>
+
+        `;
+
+        ballSelect.disabled = true;
+
+    }
 
 
-    ballSelect.disabled = true;
+    if (predictButton) {
 
-    predictButton.disabled = true;
+        predictButton.disabled = true;
+
+    }
 
 
     selectedMatch = null;
@@ -428,38 +681,64 @@ async function handleMatchSelection() {
     trendProbabilities = [];
 
 
+    replayData = [];
+
+    replayIndex = 0;
+
+
+    if (replaySection) {
+
+        replaySection.style.display =
+            "none";
+
+    }
+
+
     // Clear old trend chart
+
     clearTrendChart();
 
 
     if (!matchId) {
 
-        selectedMatchInfo.style.display =
-            "none";
+        if (selectedMatchInfo) {
+
+            selectedMatchInfo.style.display =
+                "none";
+
+        }
 
 
-        ballSelect.innerHTML = `
+        if (ballSelect) {
 
-            <option value="">
-                Select a match first
-            </option>
+            ballSelect.innerHTML = `
 
-        `;
+                <option value="">
+                    Select a match first
+                </option>
 
+            `;
+
+        }
+
+
+        resetAnalysis();
 
         return;
 
     }
 
 
-    // -------------------------------------------------
-    // Find selected match
-    // -------------------------------------------------
+    // =================================================
+    // FIND SELECTED MATCH
+    // =================================================
 
     selectedMatch =
         matches.find(
             match =>
-                String(match.match_id) ===
+                String(
+                    match.match_id
+                ) ===
                 String(matchId)
         );
 
@@ -473,18 +752,18 @@ async function handleMatchSelection() {
     }
 
 
-    // -------------------------------------------------
-    // Load match states
-    // -------------------------------------------------
+    // =================================================
+    // LOAD MATCH STATES
+    // =================================================
 
     await loadMatchStates(
         Number(matchId)
     );
 
 
-    // -------------------------------------------------
-    // Load Transformer trend
-    // -------------------------------------------------
+    // =================================================
+    // LOAD TRANSFORMER TREND
+    // =================================================
 
     await loadTrendProbabilities(
         Number(matchId)
@@ -497,26 +776,48 @@ async function handleMatchSelection() {
 // DISPLAY MATCH INFORMATION
 // =====================================================
 
-function displayMatchInformation(match) {
+function displayMatchInformation(
+    match
+) {
 
-    matchVenue.textContent =
-        match.venue || "-";
+    if (matchVenue) {
 
+        matchVenue.textContent =
+            match.venue || "-";
 
-    matchDate.textContent =
-        match.date || "-";
-
-
-    matchBattingTeam.textContent =
-        match.batting_team || "-";
+    }
 
 
-    matchBowlingTeam.textContent =
-        match.bowling_team || "-";
+    if (matchDate) {
+
+        matchDate.textContent =
+            match.date || "-";
+
+    }
 
 
-    selectedMatchInfo.style.display =
-        "block";
+    if (matchBattingTeam) {
+
+        matchBattingTeam.textContent =
+            match.batting_team || "-";
+
+    }
+
+
+    if (matchBowlingTeam) {
+
+        matchBowlingTeam.textContent =
+            match.bowling_team || "-";
+
+    }
+
+
+    if (selectedMatchInfo) {
+
+        selectedMatchInfo.style.display =
+            "block";
+
+    }
 
 }
 
@@ -525,7 +826,9 @@ function displayMatchInformation(match) {
 // LOAD MATCH STATES
 // =====================================================
 
-async function loadMatchStates(matchId) {
+async function loadMatchStates(
+    matchId
+) {
 
     showLoading(
         "Loading real ball-by-ball match states..."
@@ -560,7 +863,8 @@ async function loadMatchStates(matchId) {
 
 
         if (
-            data.status !== "success"
+            data.status !==
+            "success"
         ) {
 
             throw new Error(
@@ -602,13 +906,17 @@ async function loadMatchStates(matchId) {
         );
 
 
-        ballSelect.innerHTML = `
+        if (ballSelect) {
 
-            <option value="">
-                Unable to load match states
-            </option>
+            ballSelect.innerHTML = `
 
-        `;
+                <option value="">
+                    Unable to load match states
+                </option>
+
+            `;
+
+        }
 
 
     } finally {
@@ -625,6 +933,13 @@ async function loadMatchStates(matchId) {
 // =====================================================
 
 function populateBallDropdown() {
+
+    if (!ballSelect) {
+
+        return;
+
+    }
+
 
     ballSelect.innerHTML = `
 
@@ -662,7 +977,8 @@ function populateBallDropdown() {
     );
 
 
-    ballSelect.disabled = false;
+    ballSelect.disabled =
+        false;
 
 }
 
@@ -675,7 +991,16 @@ function handleBallSelection() {
 
     hideError();
 
-    result.style.display = "none";
+
+    stopReplay();
+
+
+    if (result) {
+
+        result.style.display =
+            "none";
+
+    }
 
 
     const legalBall =
@@ -685,13 +1010,22 @@ function handleBallSelection() {
 
 
     if (
-        !Number.isFinite(legalBall) ||
+        !Number.isFinite(
+            legalBall
+        ) ||
         !ballSelect.value
     ) {
 
         selectedState = null;
 
-        predictButton.disabled = true;
+
+        if (predictButton) {
+
+            predictButton.disabled =
+                true;
+
+        }
+
 
         resetAnalysis();
 
@@ -705,7 +1039,8 @@ function handleBallSelection() {
             state =>
                 Number(
                     state.legal_balls
-                ) === legalBall
+                ) ===
+                legalBall
         );
 
 
@@ -716,7 +1051,13 @@ function handleBallSelection() {
         );
 
 
-        predictButton.disabled = true;
+        if (predictButton) {
+
+            predictButton.disabled =
+                true;
+
+        }
+
 
         return;
 
@@ -728,7 +1069,12 @@ function handleBallSelection() {
     );
 
 
-    predictButton.disabled = false;
+    if (predictButton) {
+
+        predictButton.disabled =
+            false;
+
+    }
 
 }
 
@@ -737,56 +1083,105 @@ function handleBallSelection() {
 // UPDATE ANALYSIS
 // =====================================================
 
-function updateAnalysisFromState(state) {
+function updateAnalysisFromState(
+    state
+) {
 
-    currentScoreElement.textContent =
-        state.score;
+    if (!state) {
 
+        return;
 
-    currentWicketsElement.textContent =
-        state.wickets_lost;
-
-
-    runsRequiredElement.textContent =
-        state.runs_required;
+    }
 
 
-    ballsRemainingElement.textContent =
-        state.balls_remaining;
+    if (currentScoreElement) {
+
+        currentScoreElement.textContent =
+            state.score ?? "-";
+
+    }
 
 
-    currentRunRateElement.textContent =
-        Number(
-            state.current_run_rate
-        ).toFixed(2);
+    if (currentWicketsElement) {
+
+        currentWicketsElement.textContent =
+            state.wickets_lost ?? "-";
+
+    }
 
 
-    requiredRunRateElement.textContent =
-        Number(
-            state.required_run_rate
-        ).toFixed(2);
+    if (runsRequiredElement) {
+
+        runsRequiredElement.textContent =
+            state.runs_required ?? "-";
+
+    }
 
 
-    targetElement.textContent =
-        state.target;
+    if (ballsRemainingElement) {
+
+        ballsRemainingElement.textContent =
+            state.balls_remaining ?? "-";
+
+    }
+
+
+    if (currentRunRateElement) {
+
+        currentRunRateElement.textContent =
+            Number(
+                state.current_run_rate
+            ).toFixed(2);
+
+    }
+
+
+    if (requiredRunRateElement) {
+
+        requiredRunRateElement.textContent =
+            Number(
+                state.required_run_rate
+            ).toFixed(2);
+
+    }
+
+
+    if (targetElement) {
+
+        targetElement.textContent =
+            state.target ?? "-";
+
+    }
 
 
     const pressure =
         calculatePressure(
 
-            state.runs_required,
+            Number(
+                state.runs_required
+            ),
 
-            state.balls_remaining,
+            Number(
+                state.balls_remaining
+            ),
 
-            state.current_run_rate,
+            Number(
+                state.current_run_rate
+            ),
 
-            state.required_run_rate
+            Number(
+                state.required_run_rate
+            )
 
         );
 
 
-    pressureValueElement.textContent =
-        pressure;
+    if (pressureValueElement) {
+
+        pressureValueElement.textContent =
+            pressure;
+
+    }
 
 }
 
@@ -796,10 +1191,15 @@ function updateAnalysisFromState(state) {
 // =====================================================
 
 function calculatePressure(
+
     runsRequired,
+
     ballsRemaining,
+
     currentRunRate,
+
     requiredRunRate
+
 ) {
 
     if (
@@ -861,36 +1261,68 @@ function calculatePressure(
 
 function resetAnalysis() {
 
-    currentScoreElement.textContent =
-        "-";
+    if (currentScoreElement) {
+
+        currentScoreElement.textContent =
+            "-";
+
+    }
 
 
-    currentWicketsElement.textContent =
-        "-";
+    if (currentWicketsElement) {
+
+        currentWicketsElement.textContent =
+            "-";
+
+    }
 
 
-    runsRequiredElement.textContent =
-        "-";
+    if (runsRequiredElement) {
+
+        runsRequiredElement.textContent =
+            "-";
+
+    }
 
 
-    ballsRemainingElement.textContent =
-        "-";
+    if (ballsRemainingElement) {
+
+        ballsRemainingElement.textContent =
+            "-";
+
+    }
 
 
-    currentRunRateElement.textContent =
-        "-";
+    if (currentRunRateElement) {
+
+        currentRunRateElement.textContent =
+            "-";
+
+    }
 
 
-    requiredRunRateElement.textContent =
-        "-";
+    if (requiredRunRateElement) {
+
+        requiredRunRateElement.textContent =
+            "-";
+
+    }
 
 
-    targetElement.textContent =
-        "-";
+    if (targetElement) {
+
+        targetElement.textContent =
+            "-";
+
+    }
 
 
-    pressureValueElement.textContent =
-        "-";
+    if (pressureValueElement) {
+
+        pressureValueElement.textContent =
+            "-";
+
+    }
 
 }
 
@@ -899,7 +1331,9 @@ function resetAnalysis() {
 // LOAD REAL TRANSFORMER TREND
 // =====================================================
 
-async function loadTrendProbabilities(matchId) {
+async function loadTrendProbabilities(
+    matchId
+) {
 
     showLoading(
         "Transformer AI is calculating the complete win probability trend..."
@@ -934,7 +1368,8 @@ async function loadTrendProbabilities(matchId) {
 
 
         if (
-            data.status !== "success"
+            data.status !==
+            "success"
         ) {
 
             throw new Error(
@@ -955,6 +1390,7 @@ async function loadTrendProbabilities(matchId) {
 
             clearTrendChart();
 
+
             throw new Error(
                 "No probability trend data was returned."
             );
@@ -962,13 +1398,20 @@ async function loadTrendProbabilities(matchId) {
         }
 
 
-        // -------------------------------------------------
-        // Draw complete real trend
-        // -------------------------------------------------
+        // =================================================
+        // DRAW COMPLETE REAL TREND
+        // =================================================
 
         updateTrendChart(
             trendProbabilities
         );
+
+
+        // =================================================
+        // INITIALIZE HISTORICAL REPLAY
+        // =================================================
+
+        initializeReplay();
 
 
         console.log(
@@ -1028,9 +1471,20 @@ async function predictWinProbability() {
     );
 
 
-    result.style.display = "none";
+    if (result) {
 
-    predictButton.disabled = true;
+        result.style.display =
+            "none";
+
+    }
+
+
+    if (predictButton) {
+
+        predictButton.disabled =
+            true;
+
+    }
 
 
     try {
@@ -1061,7 +1515,8 @@ async function predictWinProbability() {
                 `${API_BASE_URL}/predict-real`,
                 {
 
-                    method: "POST",
+                    method:
+                        "POST",
 
                     headers: {
 
@@ -1070,15 +1525,16 @@ async function predictWinProbability() {
 
                     },
 
-                    body: JSON.stringify({
+                    body:
+                        JSON.stringify({
 
-                        match_id:
-                            matchId,
+                            match_id:
+                                matchId,
 
-                        legal_balls:
-                            legalBall
+                            legal_balls:
+                                legalBall
 
-                    })
+                        })
 
                 }
             );
@@ -1104,7 +1560,8 @@ async function predictWinProbability() {
 
 
         if (
-            data.status !== "success"
+            data.status !==
+            "success"
         ) {
 
             throw new Error(
@@ -1147,52 +1604,9 @@ async function predictWinProbability() {
         // UPDATE RESULT
         // =================================================
 
-        battingTeamName.textContent =
-            data.batting_team;
-
-
-        bowlingTeamName.textContent =
-            data.bowling_team;
-
-
-        battingProbability.textContent =
-            battingWinProbability.toFixed(2);
-
-
-        bowlingProbability.textContent =
-            bowlingWinProbability.toFixed(2);
-
-
-        if (
-            battingWinProbability >
-            bowlingWinProbability
-        ) {
-
-            predictionText.textContent =
-                `${data.batting_team} is more likely to win.`;
-
-        }
-
-        else if (
-            bowlingWinProbability >
-            battingWinProbability
-        ) {
-
-            predictionText.textContent =
-                `${data.bowling_team} is more likely to win.`;
-
-        }
-
-        else {
-
-            predictionText.textContent =
-                "The match is currently evenly balanced.";
-
-        }
-
-
-        result.style.display =
-            "block";
+        displayPredictionResult(
+            data
+        );
 
 
         // =================================================
@@ -1290,12 +1704,16 @@ async function predictWinProbability() {
 
 
         // Keep latest 50 predictions
+
         if (
-            predictionHistory.length > 50
+            predictionHistory.length >
+            50
         ) {
 
             predictionHistory =
-                predictionHistory.slice(-50);
+                predictionHistory.slice(
+                    -50
+                );
 
         }
 
@@ -1307,10 +1725,6 @@ async function predictWinProbability() {
             )
         );
 
-
-        // =================================================
-        // UPDATE HISTORY TABLE
-        // =================================================
 
         renderHistory();
 
@@ -1333,7 +1747,115 @@ async function predictWinProbability() {
 
         hideLoading();
 
-        predictButton.disabled = false;
+
+        if (predictButton) {
+
+            predictButton.disabled =
+                false;
+
+        }
+
+    }
+
+}
+
+
+// =====================================================
+// DISPLAY PREDICTION RESULT
+// Used by both manual prediction and replay
+// =====================================================
+
+function displayPredictionResult(
+    data
+) {
+
+    if (!data) {
+
+        return;
+
+    }
+
+
+    const battingProbabilityValue =
+        Number(
+            data.batting_team_win_probability
+        );
+
+
+    const bowlingProbabilityValue =
+        Number(
+            data.bowling_team_win_probability
+        );
+
+
+    if (battingTeamName) {
+
+        battingTeamName.textContent =
+            data.batting_team || "-";
+
+    }
+
+
+    if (bowlingTeamName) {
+
+        bowlingTeamName.textContent =
+            data.bowling_team || "-";
+
+    }
+
+
+    if (battingProbability) {
+
+        battingProbability.textContent =
+            battingProbabilityValue.toFixed(2);
+
+    }
+
+
+    if (bowlingProbability) {
+
+        bowlingProbability.textContent =
+            bowlingProbabilityValue.toFixed(2);
+
+    }
+
+
+    if (predictionText) {
+
+        if (
+            battingProbabilityValue >
+            bowlingProbabilityValue
+        ) {
+
+            predictionText.textContent =
+                `${data.batting_team} is more likely to win.`;
+
+        }
+
+        else if (
+            bowlingProbabilityValue >
+            battingProbabilityValue
+        ) {
+
+            predictionText.textContent =
+                `${data.bowling_team} is more likely to win.`;
+
+        }
+
+        else {
+
+            predictionText.textContent =
+                "The match is currently evenly balanced.";
+
+        }
+
+    }
+
+
+    if (result) {
+
+        result.style.display =
+            "block";
 
     }
 
@@ -1357,7 +1879,8 @@ function updateProbabilityChart(
 ) {
 
     if (
-        !probabilityChartCanvas
+        !probabilityChartCanvas ||
+        typeof Chart === "undefined"
     ) {
 
         return;
@@ -1381,7 +1904,8 @@ function updateProbabilityChart(
 
             {
 
-                type: "bar",
+                type:
+                    "bar",
 
 
                 data: {
@@ -1410,7 +1934,8 @@ function updateProbabilityChart(
 
                             ],
 
-                            borderWidth: 1
+                            borderWidth:
+                                1
 
                         }
 
@@ -1421,19 +1946,23 @@ function updateProbabilityChart(
 
                 options: {
 
-                    responsive: true,
+                    responsive:
+                        true,
 
                     scales: {
 
                         y: {
 
-                            beginAtZero: true,
+                            beginAtZero:
+                                true,
 
-                            max: 100,
+                            max:
+                                100,
 
                             title: {
 
-                                display: true,
+                                display:
+                                    true,
 
                                 text:
                                     "Win Probability (%)"
@@ -1449,7 +1978,8 @@ function updateProbabilityChart(
 
                         legend: {
 
-                            display: false
+                            display:
+                                false
 
                         }
 
@@ -1476,7 +2006,8 @@ function clearTrendChart() {
 
         trendChart.destroy();
 
-        trendChart = null;
+        trendChart =
+            null;
 
     }
 
@@ -1492,7 +2023,8 @@ function updateTrendChart(
 ) {
 
     if (
-        !trendChartCanvas
+        !trendChartCanvas ||
+        typeof Chart === "undefined"
     ) {
 
         return;
@@ -1500,7 +2032,6 @@ function updateTrendChart(
     }
 
 
-    // Destroy old chart
     clearTrendChart();
 
 
@@ -1576,14 +2107,13 @@ function updateTrendChart(
 
             {
 
-                type: "line",
+                type:
+                    "line",
 
 
                 data: {
 
                     labels:
-
-
                         labels,
 
 
@@ -1647,16 +2177,20 @@ function updateTrendChart(
 
                 options: {
 
-                    responsive: true,
+                    responsive:
+                        true,
 
-                    maintainAspectRatio: true,
+                    maintainAspectRatio:
+                        true,
 
 
                     interaction: {
 
-                        mode: "index",
+                        mode:
+                            "index",
 
-                        intersect: false
+                        intersect:
+                            false
 
                     },
 
@@ -1665,13 +2199,16 @@ function updateTrendChart(
 
                         y: {
 
-                            beginAtZero: true,
+                            beginAtZero:
+                                true,
 
-                            max: 100,
+                            max:
+                                100,
 
                             title: {
 
-                                display: true,
+                                display:
+                                    true,
 
                                 text:
                                     "Win Probability (%)"
@@ -1685,7 +2222,8 @@ function updateTrendChart(
 
                             title: {
 
-                                display: true,
+                                display:
+                                    true,
 
                                 text:
                                     "Legal Ball"
@@ -1695,10 +2233,11 @@ function updateTrendChart(
 
                             ticks: {
 
-                                // Prevent too many labels
-                                autoSkip: true,
+                                autoSkip:
+                                    true,
 
-                                maxTicksLimit: 15
+                                maxTicksLimit:
+                                    15
 
                             }
 
@@ -1711,7 +2250,8 @@ function updateTrendChart(
 
                         title: {
 
-                            display: true,
+                            display:
+                                true,
 
                             text:
                                 "Real Transformer Win Probability Trend"
@@ -1721,9 +2261,11 @@ function updateTrendChart(
 
                         legend: {
 
-                            display: true,
+                            display:
+                                true,
 
-                            position: "top"
+                            position:
+                                "top"
 
                         },
 
@@ -1826,16 +2368,748 @@ function updateTrendChart(
 
 
 // =====================================================
+// HISTORICAL MATCH REPLAY
+// =====================================================
+
+// Build replay data by combining:
+// 1. Real match states
+// 2. Real Transformer probabilities
+
+function initializeReplay() {
+
+    stopReplay();
+
+
+    replayData = [];
+
+
+    if (
+        !trendProbabilities ||
+        trendProbabilities.length === 0
+    ) {
+
+        if (replaySection) {
+
+            replaySection.style.display =
+                "none";
+
+        }
+
+        return;
+
+    }
+
+
+    // =================================================
+    // MATCH EACH PREDICTION WITH ITS MATCH STATE
+    // =================================================
+
+    trendProbabilities.forEach(
+        prediction => {
+
+            const state =
+                matchStates.find(
+                    item =>
+                        Number(
+                            item.legal_balls
+                        ) ===
+                        Number(
+                            prediction.legal_balls
+                        )
+                );
+
+
+            if (state) {
+
+                replayData.push({
+
+                    ...state,
+
+                    ...prediction
+
+                });
+
+            }
+
+        }
+    );
+
+
+    if (
+        replayData.length === 0
+    ) {
+
+        if (replaySection) {
+
+            replaySection.style.display =
+                "none";
+
+        }
+
+        return;
+
+    }
+
+
+    // =================================================
+    // SHOW REPLAY
+    // =================================================
+
+    if (replaySection) {
+
+        replaySection.style.display =
+            "block";
+
+    }
+
+
+    replayIndex =
+        0;
+
+
+    // =================================================
+    // SET SLIDER
+    // =================================================
+
+    if (replaySlider) {
+
+        replaySlider.min =
+            0;
+
+        replaySlider.max =
+            replayData.length - 1;
+
+        replaySlider.value =
+            0;
+
+        replaySlider.disabled =
+            false;
+
+    }
+
+
+    // =================================================
+    // BUTTON STATES
+    // =================================================
+
+    if (startReplayButton) {
+
+        startReplayButton.disabled =
+            false;
+
+    }
+
+
+    if (pauseReplayButton) {
+
+        pauseReplayButton.disabled =
+            true;
+
+    }
+
+
+    if (previousBallButton) {
+
+        previousBallButton.disabled =
+            true;
+
+    }
+
+
+    if (nextBallButton) {
+
+        nextBallButton.disabled =
+            replayData.length <= 1;
+
+    }
+
+
+    if (restartReplayButton) {
+
+        restartReplayButton.disabled =
+            false;
+
+    }
+
+
+    // =================================================
+    // SHOW FIRST REPLAY STATE
+    // =================================================
+
+    renderReplayState();
+
+
+    console.log(
+        `Replay initialized with ${replayData.length} ` +
+        `real Transformer predictions.`
+    );
+
+}
+
+
+// =====================================================
+// RENDER CURRENT REPLAY STATE
+// =====================================================
+
+function renderReplayState() {
+
+    if (
+        !replayData ||
+        replayData.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const item =
+        replayData[
+            replayIndex
+        ];
+
+
+    if (!item) {
+
+        return;
+
+    }
+
+
+    // =================================================
+    // REPLAY SCOREBOARD
+    // =================================================
+
+    if (replayBall) {
+
+        replayBall.textContent =
+            item.legal_balls;
+
+    }
+
+
+    if (replayOver) {
+
+        replayOver.textContent =
+            `Over ${item.over}`;
+
+    }
+
+
+    if (replayScore) {
+
+        replayScore.textContent =
+            item.score;
+
+    }
+
+
+    if (replayWickets) {
+
+        replayWickets.textContent =
+            item.wickets_lost;
+
+    }
+
+
+    // =================================================
+    // REPLAY TEAMS
+    // =================================================
+
+    if (replayBattingTeam) {
+
+        replayBattingTeam.textContent =
+            item.batting_team;
+
+    }
+
+
+    if (replayBowlingTeam) {
+
+        replayBowlingTeam.textContent =
+            item.bowling_team;
+
+    }
+
+
+    // =================================================
+    // REPLAY PROBABILITIES
+    // =================================================
+
+    const battingProbabilityValue =
+        Number(
+            item.batting_team_win_probability
+        );
+
+
+    const bowlingProbabilityValue =
+        Number(
+            item.bowling_team_win_probability
+        );
+
+
+    if (replayBattingProbability) {
+
+        replayBattingProbability.textContent =
+            `${battingProbabilityValue.toFixed(2)}%`;
+
+    }
+
+
+    if (replayBowlingProbability) {
+
+        replayBowlingProbability.textContent =
+            `${bowlingProbabilityValue.toFixed(2)}%`;
+
+    }
+
+
+    // =================================================
+    // PROGRESS
+    // =================================================
+
+    if (replayProgress) {
+
+        replayProgress.textContent =
+            `Prediction ${replayIndex + 1} ` +
+            `of ${replayData.length}` +
+            ` | Ball ${item.legal_balls}`;
+
+    }
+
+
+    if (replaySlider) {
+
+        replaySlider.value =
+            replayIndex;
+
+    }
+
+
+    // =================================================
+    // BUTTON STATES
+    // =================================================
+
+    if (previousBallButton) {
+
+        previousBallButton.disabled =
+            replayIndex === 0;
+
+    }
+
+
+    if (nextBallButton) {
+
+        nextBallButton.disabled =
+            replayIndex ===
+            replayData.length - 1;
+
+    }
+
+
+    // =================================================
+    // UPDATE SELECTED STATE
+    // =================================================
+
+    selectedState =
+        matchStates.find(
+            state =>
+                Number(
+                    state.legal_balls
+                ) ===
+                Number(
+                    item.legal_balls
+                )
+        ) || item;
+
+
+    // =================================================
+    // SYNC BALL DROPDOWN
+    // =================================================
+
+    if (
+        ballSelect &&
+        selectedState
+    ) {
+
+        ballSelect.value =
+            selectedState.legal_balls;
+
+    }
+
+
+    // =================================================
+    // UPDATE EXISTING MATCH ANALYSIS
+    // =================================================
+
+    updateAnalysisFromState(
+        item
+    );
+
+
+    // =================================================
+    // UPDATE EXISTING PREDICTION RESULT
+    // =================================================
+
+    displayPredictionResult({
+
+        batting_team:
+            item.batting_team,
+
+        bowling_team:
+            item.bowling_team,
+
+        batting_team_win_probability:
+            battingProbabilityValue,
+
+        bowling_team_win_probability:
+            bowlingProbabilityValue
+
+    });
+
+
+    // =================================================
+    // UPDATE CURRENT PROBABILITY CHART
+    // =================================================
+
+    updateProbabilityChart(
+
+        item.batting_team,
+
+        item.bowling_team,
+
+        battingProbabilityValue,
+
+        bowlingProbabilityValue
+
+    );
+
+}
+
+
+// =====================================================
+// START REPLAY
+// =====================================================
+
+function startReplay() {
+
+    if (
+        !replayData ||
+        replayData.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    // If replay is at the end,
+    // restart from the beginning.
+
+    if (
+        replayIndex >=
+        replayData.length - 1
+    ) {
+
+        replayIndex =
+            0;
+
+        renderReplayState();
+
+    }
+
+
+    // Clear existing timer
+
+    if (replayTimer !== null) {
+
+        clearInterval(
+            replayTimer
+        );
+
+        replayTimer =
+            null;
+
+    }
+
+
+    // =================================================
+    // START AUTOMATIC REPLAY
+    // =================================================
+
+    replayTimer =
+        setInterval(
+
+            function() {
+
+                if (
+                    replayIndex <
+                    replayData.length - 1
+                ) {
+
+                    replayIndex++;
+
+                    renderReplayState();
+
+                }
+
+                else {
+
+                    stopReplay();
+
+                }
+
+            },
+
+            replayInterval
+
+        );
+
+
+    if (startReplayButton) {
+
+        startReplayButton.disabled =
+            true;
+
+    }
+
+
+    if (pauseReplayButton) {
+
+        pauseReplayButton.disabled =
+            false;
+
+    }
+
+}
+
+
+// =====================================================
+// PAUSE REPLAY
+// =====================================================
+
+function pauseReplay() {
+
+    if (
+        replayTimer !== null
+    ) {
+
+        clearInterval(
+            replayTimer
+        );
+
+        replayTimer =
+            null;
+
+    }
+
+
+    if (startReplayButton) {
+
+        startReplayButton.disabled =
+            replayData.length === 0;
+
+    }
+
+
+    if (pauseReplayButton) {
+
+        pauseReplayButton.disabled =
+            true;
+
+    }
+
+}
+
+
+// =====================================================
+// STOP REPLAY
+// =====================================================
+
+function stopReplay() {
+
+    if (
+        replayTimer !== null
+    ) {
+
+        clearInterval(
+            replayTimer
+        );
+
+        replayTimer =
+            null;
+
+    }
+
+
+    if (startReplayButton) {
+
+        startReplayButton.disabled =
+            replayData.length === 0;
+
+    }
+
+
+    if (pauseReplayButton) {
+
+        pauseReplayButton.disabled =
+            true;
+
+    }
+
+}
+
+
+// =====================================================
+// PREVIOUS REPLAY BALL
+// =====================================================
+
+function showPreviousReplayBall() {
+
+    pauseReplay();
+
+
+    if (
+        replayIndex > 0
+    ) {
+
+        replayIndex--;
+
+        renderReplayState();
+
+    }
+
+}
+
+
+// =====================================================
+// NEXT REPLAY BALL
+// =====================================================
+
+function showNextReplayBall() {
+
+    pauseReplay();
+
+
+    if (
+        replayIndex <
+        replayData.length - 1
+    ) {
+
+        replayIndex++;
+
+        renderReplayState();
+
+    }
+
+}
+
+
+// =====================================================
+// RESTART REPLAY
+// =====================================================
+
+function restartReplay() {
+
+    pauseReplay();
+
+
+    replayIndex =
+        0;
+
+
+    renderReplayState();
+
+}
+
+
+// =====================================================
+// REPLAY SLIDER
+// =====================================================
+
+function changeReplayPosition() {
+
+    pauseReplay();
+
+
+    if (
+        !replayData ||
+        replayData.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    replayIndex =
+        Number(
+            replaySlider.value
+        );
+
+
+    renderReplayState();
+
+}
+
+
+// =====================================================
+// REPLAY SPEED
+// =====================================================
+
+function changeReplaySpeed() {
+
+    if (!replaySpeed) {
+
+        return;
+
+    }
+
+
+    replayInterval =
+        Number(
+            replaySpeed.value
+        );
+
+
+    // Check whether replay was running
+
+    const wasRunning =
+        replayTimer !== null;
+
+
+    if (wasRunning) {
+
+        // Restart timer with new speed
+
+        startReplay();
+
+    }
+
+}
+
+
+// =====================================================
 // RENDER HISTORY
 // =====================================================
 
 function renderHistory() {
 
-    historyBody.innerHTML = "";
+    if (!historyBody) {
+
+        return;
+
+    }
+
+
+    historyBody.innerHTML =
+        "";
 
 
     const reversedHistory =
-        [...predictionHistory].reverse();
+        [
+            ...predictionHistory
+        ].reverse();
 
 
     if (
@@ -1968,7 +3242,8 @@ function clearHistory() {
     }
 
 
-    predictionHistory = [];
+    predictionHistory =
+        [];
 
 
     localStorage.removeItem(
@@ -1985,28 +3260,118 @@ function clearHistory() {
 // EVENT LISTENERS
 // =====================================================
 
-matchSelect.addEventListener(
-    "change",
-    handleMatchSelection
-);
+if (matchSelect) {
+
+    matchSelect.addEventListener(
+        "change",
+        handleMatchSelection
+    );
+
+}
 
 
-ballSelect.addEventListener(
-    "change",
-    handleBallSelection
-);
+if (ballSelect) {
+
+    ballSelect.addEventListener(
+        "change",
+        handleBallSelection
+    );
+
+}
 
 
-predictButton.addEventListener(
-    "click",
-    predictWinProbability
-);
+if (predictButton) {
+
+    predictButton.addEventListener(
+        "click",
+        predictWinProbability
+    );
+
+}
 
 
-clearHistoryButton.addEventListener(
-    "click",
-    clearHistory
-);
+if (clearHistoryButton) {
+
+    clearHistoryButton.addEventListener(
+        "click",
+        clearHistory
+    );
+
+}
+
+
+// =====================================================
+// REPLAY EVENT LISTENERS
+// =====================================================
+
+if (previousBallButton) {
+
+    previousBallButton.addEventListener(
+        "click",
+        showPreviousReplayBall
+    );
+
+}
+
+
+if (startReplayButton) {
+
+    startReplayButton.addEventListener(
+        "click",
+        startReplay
+    );
+
+}
+
+
+if (pauseReplayButton) {
+
+    pauseReplayButton.addEventListener(
+        "click",
+        pauseReplay
+    );
+
+}
+
+
+if (nextBallButton) {
+
+    nextBallButton.addEventListener(
+        "click",
+        showNextReplayBall
+    );
+
+}
+
+
+if (restartReplayButton) {
+
+    restartReplayButton.addEventListener(
+        "click",
+        restartReplay
+    );
+
+}
+
+
+if (replaySlider) {
+
+    replaySlider.addEventListener(
+        "input",
+        changeReplayPosition
+    );
+
+}
+
+
+if (replaySpeed) {
+
+    replaySpeed.addEventListener(
+        "change",
+        changeReplaySpeed
+    );
+
+}
 
 
 // =====================================================
