@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 from pathlib import Path
+import os
+import requests
 
 import torch
 import torch.nn as nn
@@ -328,6 +330,8 @@ app = Flask(__name__)
 # Enable CORS so the deployed frontend can communicate
 # with the deployed Flask backend.
 CORS(app)
+CRICKET_API_KEY = os.getenv("CRICKET_API_KEY")
+CRICKET_API_BASE = "https://api.cricapi.com/v1"
 
 
 # ============================================================
@@ -1388,6 +1392,42 @@ def get_match_probabilities(match_id):
             "error":
                 str(e)
 
+        }), 500
+# ============================================================
+# LIVE CRICKET DATA
+# ============================================================
+
+@app.route("/live-matches", methods=["GET"])
+def get_live_matches():
+
+    try:
+
+        if not CRICKET_API_KEY:
+            return jsonify({
+                "status": "error",
+                "error": "CRICKET_API_KEY is not configured."
+            }), 500
+
+        response = requests.get(
+            f"{CRICKET_API_BASE}/currentMatches",
+            params={
+                "apikey": CRICKET_API_KEY,
+                "offset": 0
+            },
+            timeout=20
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        return jsonify(data)
+
+    except Exception as e:
+
+        return jsonify({
+            "status": "error",
+            "error": str(e)
         }), 500
 
 
