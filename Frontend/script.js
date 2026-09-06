@@ -1955,120 +1955,93 @@ function displayPredictionResult(
 // CURRENT PROBABILITY CHART
 // =====================================================
 
-function updateProbabilityChart(
+function updateProbabilityChart() {
 
-    battingTeamValue,
+    const ctx = document.getElementById("probabilityChart");
 
-    bowlingTeamValue,
+    if (!ctx) return;
 
-    battingProbabilityValue,
-
-    bowlingProbabilityValue
-
-) {
-
-    if (
-        !probabilityChartCanvas ||
-        typeof Chart === "undefined"
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        probabilityChart
-    ) {
-
+    if (probabilityChart) {
         probabilityChart.destroy();
-
     }
 
+    probabilityChart = new Chart(ctx, {
 
-    probabilityChart =
-        new Chart(
+        type: "bar",
 
-            probabilityChartCanvas,
+        data: {
 
-            {
+            labels: [
+                battingTeamName.textContent,
+                bowlingTeamName.textContent
+            ],
 
-                type:
-                    "bar",
+            datasets: [
 
+                {
+                    label: "Win Probability",
 
-                data: {
-
-                    labels: [
-
-                        battingTeamValue,
-
-                        bowlingTeamValue
-
+                    data: [
+                        battingProbabilityValue,
+                        bowlingProbabilityValue
                     ],
 
+                    borderWidth: 0,
 
-                    datasets: [
+                    borderRadius: 12,
 
-                        {
+                    barThickness: 55,
 
-                            label:
-                                "Win Probability (%)",
+                    backgroundColor: [
+                        "rgba(59, 130, 246, 0.85)",
+                        "rgba(139, 92, 246, 0.85)"
+                    ],
 
-                            data: [
-
-                                battingProbabilityValue,
-
-                                bowlingProbabilityValue
-
-                            ],
-
-                            borderWidth:
-                                1
-
-                        }
-
+                    hoverBackgroundColor: [
+                        "rgba(59, 130, 246, 1)",
+                        "rgba(139, 92, 246, 1)"
                     ]
+                }
 
+            ]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            animation: {
+                duration: 800
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
                 },
 
+                tooltip: {
 
-                options: {
+                    backgroundColor: "#111827",
 
-                    responsive:
-                        true,
+                    titleColor: "#ffffff",
 
-                    scales: {
+                    bodyColor: "#d1d5db",
 
-                        y: {
+                    padding: 12,
 
-                            beginAtZero:
-                                true,
+                    displayColors: false,
 
-                            max:
-                                100,
+                    callbacks: {
 
-                            title: {
+                        label: function(context) {
 
-                                display:
-                                    true,
-
-                                text:
-                                    "Win Probability (%)"
-
-                            }
-
-                        }
-
-                    },
-
-
-                    plugins: {
-
-                        legend: {
-
-                            display:
-                                false
+                            return " Win Probability: "
+                                + context.parsed.y.toFixed(1)
+                                + "%";
 
                         }
 
@@ -2076,13 +2049,51 @@ function updateProbabilityChart(
 
                 }
 
+            },
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    max: 100,
+
+                    ticks: {
+
+                        color: "#94a3b8",
+
+                        callback: function(value) {
+                            return value + "%";
+                        }
+
+                    },
+
+                    grid: {
+                        color: "rgba(148, 163, 184, 0.12)"
+                    }
+
+                },
+
+                x: {
+
+                    ticks: {
+                        color: "#cbd5e1"
+                    },
+
+                    grid: {
+                        display: false
+                    }
+
+                }
+
             }
 
-        );
+        }
+
+    });
 
 }
-
-
 // =====================================================
 // CLEAR TREND CHART
 // =====================================================
@@ -2107,32 +2118,236 @@ function clearTrendChart() {
 // REAL WIN PROBABILITY TREND CHART
 // =====================================================
 
-function updateTrendChart(
-    probabilities
-) {
+function updateTrendChart(probabilities) {
 
-    if (
-        !trendChartCanvas ||
-        typeof Chart === "undefined"
-    ) {
+    const ctx = document.getElementById("trendChart");
 
-        return;
+    if (!ctx) return;
 
+    if (trendChart) {
+        trendChart.destroy();
     }
 
+    const labels = probabilities.map(item =>
+        `Ball ${item.legal_balls}`
+    );
 
-    clearTrendChart();
+    const battingData = probabilities.map(item =>
+        Number(item.batting_probability)
+    );
 
+    const bowlingData = probabilities.map(item =>
+        Number(item.bowling_probability)
+    );
 
-    if (
-        !probabilities ||
-        probabilities.length === 0
-    ) {
+    trendChart = new Chart(ctx, {
 
-        return;
+        type: "line",
 
-    }
+        data: {
 
+            labels: labels,
+
+            datasets: [
+
+                {
+                    label: battingTeamName.textContent,
+
+                    data: battingData,
+
+                    borderWidth: 3,
+
+                    tension: 0.35,
+
+                    pointRadius: 2,
+
+                    pointHoverRadius: 6,
+
+                    fill: true,
+
+                    backgroundColor:
+                        "rgba(59, 130, 246, 0.10)",
+
+                    borderColor:
+                        "rgba(59, 130, 246, 1)"
+                },
+
+                {
+                    label: bowlingTeamName.textContent,
+
+                    data: bowlingData,
+
+                    borderWidth: 3,
+
+                    tension: 0.35,
+
+                    pointRadius: 2,
+
+                    pointHoverRadius: 6,
+
+                    fill: true,
+
+                    backgroundColor:
+                        "rgba(139, 92, 246, 0.10)",
+
+                    borderColor:
+                        "rgba(139, 92, 246, 1)"
+                }
+
+            ]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            interaction: {
+
+                mode: "index",
+
+                intersect: false
+
+            },
+
+            animation: {
+
+                duration: 700
+
+            },
+
+            plugins: {
+
+                legend: {
+
+                    display: true,
+
+                    position: "top",
+
+                    labels: {
+
+                        color: "#cbd5e1",
+
+                        padding: 20,
+
+                        usePointStyle: true
+
+                    }
+
+                },
+
+                tooltip: {
+
+                    backgroundColor: "#111827",
+
+                    titleColor: "#ffffff",
+
+                    bodyColor: "#d1d5db",
+
+                    padding: 12,
+
+                    callbacks: {
+
+                        title: function(context) {
+
+                            return context[0].label;
+
+                        },
+
+                        label: function(context) {
+
+                            return (
+                                " " +
+                                context.dataset.label +
+                                ": " +
+                                context.parsed.y.toFixed(1) +
+                                "%"
+                            );
+
+                        }
+
+                    }
+
+                }
+
+            },
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    max: 100,
+
+                    ticks: {
+
+                        color: "#94a3b8",
+
+                        callback: function(value) {
+
+                            return value + "%";
+
+                        }
+
+                    },
+
+                    grid: {
+
+                        color:
+                            "rgba(148, 163, 184, 0.10)"
+
+                    },
+
+                    title: {
+
+                        display: true,
+
+                        text: "Win Probability (%)",
+
+                        color: "#94a3b8"
+
+                    }
+
+                },
+
+                x: {
+
+                    ticks: {
+
+                        color: "#94a3b8",
+
+                        maxTicksLimit: 12
+
+                    },
+
+                    grid: {
+
+                        display: false
+
+                    },
+
+                    title: {
+
+                        display: true,
+
+                        text: "Legal Ball",
+
+                        color: "#94a3b8"
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+}
 
     // =================================================
     // X-AXIS LABELS
@@ -2480,7 +2695,7 @@ function initializeReplay() {
         if (replaySection) {
 
             replaySection.style.display =
-                "none";
+                "block";
 
         }
 
