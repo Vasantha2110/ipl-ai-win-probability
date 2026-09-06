@@ -18,15 +18,11 @@ const API_BASE_URL =
 // =====================================================
 
 let matches = [];
-
 let matchStates = [];
-
 let trendProbabilities = [];
-
 let predictionHistory = [];
 
 let selectedMatch = null;
-
 let selectedState = null;
 
 
@@ -35,11 +31,8 @@ let selectedState = null;
 // =====================================================
 
 let replayData = [];
-
 let replayIndex = 0;
-
 let replayTimer = null;
-
 let replayInterval = 1000;
 
 
@@ -50,25 +43,15 @@ let replayInterval = 1000;
 try {
 
     const savedHistory =
-        localStorage.getItem(
-            "predictionHistory"
-        );
-
+        localStorage.getItem("predictionHistory");
 
     predictionHistory =
         savedHistory
             ? JSON.parse(savedHistory)
             : [];
 
-
-    if (
-        !Array.isArray(
-            predictionHistory
-        )
-    ) {
-
+    if (!Array.isArray(predictionHistory)) {
         predictionHistory = [];
-
     }
 
 } catch (error) {
@@ -79,7 +62,6 @@ try {
     );
 
     predictionHistory = [];
-
 }
 
 
@@ -88,51 +70,28 @@ try {
 // =====================================================
 
 const matchSelect =
-    document.getElementById(
-        "matchSelect"
-    );
-
+    document.getElementById("matchSelect");
 
 const ballSelect =
-    document.getElementById(
-        "ballSelect"
-    );
-
+    document.getElementById("ballSelect");
 
 const selectedMatchInfo =
-    document.getElementById(
-        "selectedMatchInfo"
-    );
-
+    document.getElementById("selectedMatchInfo");
 
 const matchVenue =
-    document.getElementById(
-        "matchVenue"
-    );
-
+    document.getElementById("matchVenue");
 
 const matchDate =
-    document.getElementById(
-        "matchDate"
-    );
-
+    document.getElementById("matchDate");
 
 const matchBattingTeam =
-    document.getElementById(
-        "matchBattingTeam"
-    );
-
+    document.getElementById("matchBattingTeam");
 
 const matchBowlingTeam =
-    document.getElementById(
-        "matchBowlingTeam"
-    );
-
+    document.getElementById("matchBowlingTeam");
 
 const predictButton =
-    document.getElementById(
-        "predictButton"
-    );
+    document.getElementById("predictButton");
 
 
 // =====================================================
@@ -140,105 +99,55 @@ const predictButton =
 // =====================================================
 
 const replaySection =
-    document.getElementById(
-        "replaySection"
-    );
-
+    document.getElementById("replaySection");
 
 const replayBall =
-    document.getElementById(
-        "replayBall"
-    );
-
+    document.getElementById("replayBall");
 
 const replayOver =
-    document.getElementById(
-        "replayOver"
-    );
-
+    document.getElementById("replayOver");
 
 const replayScore =
-    document.getElementById(
-        "replayScore"
-    );
-
+    document.getElementById("replayScore");
 
 const replayWickets =
-    document.getElementById(
-        "replayWickets"
-    );
-
+    document.getElementById("replayWickets");
 
 const replayBattingTeam =
-    document.getElementById(
-        "replayBattingTeam"
-    );
-
+    document.getElementById("replayBattingTeam");
 
 const replayBowlingTeam =
-    document.getElementById(
-        "replayBowlingTeam"
-    );
-
+    document.getElementById("replayBowlingTeam");
 
 const replayBattingProbability =
-    document.getElementById(
-        "replayBattingProbability"
-    );
-
+    document.getElementById("replayBattingProbability");
 
 const replayBowlingProbability =
-    document.getElementById(
-        "replayBowlingProbability"
-    );
-
+    document.getElementById("replayBowlingProbability");
 
 const replaySlider =
-    document.getElementById(
-        "replaySlider"
-    );
-
+    document.getElementById("replaySlider");
 
 const replayProgress =
-    document.getElementById(
-        "replayProgress"
-    );
-
+    document.getElementById("replayProgress");
 
 const previousBallButton =
-    document.getElementById(
-        "previousBallButton"
-    );
-
+    document.getElementById("previousBallButton");
 
 const startReplayButton =
-    document.getElementById(
-        "startReplayButton"
-    );
-
+    document.getElementById("startReplayButton");
 
 const pauseReplayButton =
-    document.getElementById(
-        "pauseReplayButton"
-    );
-
+    document.getElementById("pauseReplayButton");
 
 const nextBallButton =
-    document.getElementById(
-        "nextBallButton"
-    );
-
+    document.getElementById("nextBallButton");
 
 const restartReplayButton =
-    document.getElementById(
-        "restartReplayButton"
-    );
-
+    document.getElementById("restartReplayButton");
 
 const replaySpeed =
-    document.getElementById(
-        "replaySpeed"
-    );
+    document.getElementById("replaySpeed");
 
 
 // =====================================================
@@ -246,21 +155,13 @@ const replaySpeed =
 // =====================================================
 
 const loading =
-    document.getElementById(
-        "loading"
-    );
-
+    document.getElementById("loading");
 
 const errorBox =
-    document.getElementById(
-        "error"
-    );
-
+    document.getElementById("error");
 
 const result =
-    document.getElementById(
-        "result"
-    );
+    document.getElementById("result");
 
 
 // =====================================================
@@ -268,27 +169,16 @@ const result =
 // =====================================================
 
 const battingTeamName =
-    document.getElementById(
-        "battingTeamName"
-    );
-
+    document.getElementById("battingTeamName");
 
 const bowlingTeamName =
-    document.getElementById(
-        "bowlingTeamName"
-    );
-
+    document.getElementById("bowlingTeamName");
 
 const battingProbability =
-    document.getElementById(
-        "battingProbability"
-    );
-
+    document.getElementById("battingProbability");
 
 const bowlingProbability =
-    document.getElementById(
-        "bowlingProbability"
-    );
+    document.getElementById("bowlingProbability");
 
 
 // =====================================================
@@ -296,21 +186,13 @@ const bowlingProbability =
 // =====================================================
 
 const battingProbabilityBar =
-    document.getElementById(
-        "battingProbabilityBar"
-    );
-
+    document.getElementById("battingProbabilityBar");
 
 const bowlingProbabilityBar =
-    document.getElementById(
-        "bowlingProbabilityBar"
-    );
-
+    document.getElementById("bowlingProbabilityBar");
 
 const predictionText =
-    document.getElementById(
-        "predictionText"
-    );
+    document.getElementById("predictionText");
 
 
 // =====================================================
@@ -318,51 +200,28 @@ const predictionText =
 // =====================================================
 
 const currentScoreElement =
-    document.getElementById(
-        "currentScore"
-    );
-
+    document.getElementById("currentScore");
 
 const currentWicketsElement =
-    document.getElementById(
-        "currentWickets"
-    );
-
+    document.getElementById("currentWickets");
 
 const runsRequiredElement =
-    document.getElementById(
-        "runsRequired"
-    );
-
+    document.getElementById("runsRequired");
 
 const ballsRemainingElement =
-    document.getElementById(
-        "ballsRemaining"
-    );
-
+    document.getElementById("ballsRemaining");
 
 const currentRunRateElement =
-    document.getElementById(
-        "currentRunRate"
-    );
-
+    document.getElementById("currentRunRate");
 
 const requiredRunRateElement =
-    document.getElementById(
-        "requiredRunRate"
-    );
-
+    document.getElementById("requiredRunRate");
 
 const targetElement =
-    document.getElementById(
-        "targetValue"
-    );
-
+    document.getElementById("targetValue");
 
 const pressureValueElement =
-    document.getElementById(
-        "pressureValue"
-    );
+    document.getElementById("pressureValue");
 
 
 // =====================================================
@@ -370,19 +229,12 @@ const pressureValueElement =
 // =====================================================
 
 const probabilityChartCanvas =
-    document.getElementById(
-        "probabilityChart"
-    );
-
+    document.getElementById("probabilityChart");
 
 const trendChartCanvas =
-    document.getElementById(
-        "trendChart"
-    );
-
+    document.getElementById("trendChart");
 
 let probabilityChart = null;
-
 let trendChart = null;
 
 
@@ -391,15 +243,10 @@ let trendChart = null;
 // =====================================================
 
 const historyBody =
-    document.getElementById(
-        "historyBody"
-    );
-
+    document.getElementById("historyBody");
 
 const clearHistoryButton =
-    document.getElementById(
-        "clearHistory"
-    );
+    document.getElementById("clearHistory");
 
 
 // =====================================================
@@ -409,38 +256,28 @@ const clearHistoryButton =
 function showError(message) {
 
     if (!errorBox) {
-
         return;
-
     }
-
 
     errorBox.textContent =
         message;
 
-
     errorBox.style.display =
         "block";
-
 }
 
 
 function hideError() {
 
     if (!errorBox) {
-
         return;
-
     }
-
 
     errorBox.textContent =
         "";
 
-
     errorBox.style.display =
         "none";
-
 }
 
 
@@ -451,34 +288,25 @@ function hideError() {
 function showLoading(message) {
 
     if (!loading) {
-
         return;
-
     }
-
 
     loading.innerHTML =
         `<p>🤖 ${message}</p>`;
 
-
     loading.style.display =
         "block";
-
 }
 
 
 function hideLoading() {
 
     if (!loading) {
-
         return;
-
     }
-
 
     loading.style.display =
         "none";
-
 }
 
 
@@ -490,19 +318,21 @@ async function loadMatches() {
 
     hideError();
 
-
     showLoading(
         "Loading IPL match data..."
     );
 
-
     try {
+
+        console.log(
+            "Requesting matches from:",
+            `${API_BASE_URL}/matches`
+        );
 
         const response =
             await fetch(
                 `${API_BASE_URL}/matches`
             );
-
 
         if (!response.ok) {
 
@@ -512,20 +342,16 @@ async function loadMatches() {
 
         }
 
-
         const data =
             await response.json();
-
 
         console.log(
             "Matches API response:",
             data
         );
 
-
         if (
-            data.status !==
-            "success"
+            data.status !== "success"
         ) {
 
             throw new Error(
@@ -535,14 +361,12 @@ async function loadMatches() {
 
         }
 
-
         matches =
-            data.matches || [];
+            Array.isArray(data.matches)
+                ? data.matches
+                : [];
 
-
-        if (
-            matches.length === 0
-        ) {
+        if (matches.length === 0) {
 
             throw new Error(
                 "No IPL matches were found."
@@ -550,9 +374,11 @@ async function loadMatches() {
 
         }
 
-
         populateMatchDropdown();
 
+        console.log(
+            `Successfully loaded ${matches.length} IPL matches.`
+        );
 
     } catch (error) {
 
@@ -561,32 +387,26 @@ async function loadMatches() {
             error
         );
 
-
         showError(
             "Could not load IPL matches. " +
             error.message
         );
 
-
         if (matchSelect) {
 
             matchSelect.innerHTML = `
-
                 <option value="">
                     Unable to load matches
                 </option>
-
             `;
 
         }
-
 
     } finally {
 
         hideLoading();
 
     }
-
 }
 
 
@@ -597,48 +417,34 @@ async function loadMatches() {
 function populateMatchDropdown() {
 
     if (!matchSelect) {
-
         return;
-
     }
 
-
     matchSelect.innerHTML = `
-
         <option value="">
             Select an IPL Match
         </option>
-
     `;
 
+    matches.forEach(match => {
 
-    matches.forEach(
-        match => {
+        const option =
+            document.createElement("option");
 
-            const option =
-                document.createElement(
-                    "option"
-                );
+        option.value =
+            match.match_id;
 
+        option.textContent =
+            `${match.match_id} | ` +
+            `${match.batting_team} vs ` +
+            `${match.bowling_team} | ` +
+            `${match.date}`;
 
-            option.value =
-                match.match_id;
+        matchSelect.appendChild(
+            option
+        );
 
-
-            option.textContent =
-                `${match.match_id} | ` +
-                `${match.batting_team} vs ` +
-                `${match.bowling_team} | ` +
-                `${match.date}`;
-
-
-            matchSelect.appendChild(
-                option
-            );
-
-        }
-    );
-
+    });
 }
 
 
@@ -650,98 +456,65 @@ async function handleMatchSelection() {
 
     hideError();
 
-
     stopReplay();
 
-
     if (result) {
-
-        result.style.display =
-            "none";
-
+        result.style.display = "none";
     }
-
 
     const matchId =
         matchSelect.value;
 
-
     if (ballSelect) {
 
         ballSelect.innerHTML = `
-
             <option value="">
                 Loading match states...
             </option>
-
         `;
 
         ballSelect.disabled = true;
-
     }
-
 
     if (predictButton) {
-
         predictButton.disabled = true;
-
     }
 
-
     selectedMatch = null;
-
     selectedState = null;
 
     matchStates = [];
-
     trendProbabilities = [];
 
-
     replayData = [];
-
     replayIndex = 0;
 
-
     if (replaySection) {
-
-        replaySection.style.display =
-            "none";
-
+        replaySection.style.display = "none";
     }
 
-
     clearTrendChart();
-
 
     if (!matchId) {
 
         if (selectedMatchInfo) {
-
-            selectedMatchInfo.style.display =
-                "none";
-
+            selectedMatchInfo.style.display = "none";
         }
-
 
         if (ballSelect) {
 
             ballSelect.innerHTML = `
-
                 <option value="">
                     Select a match first
                 </option>
-
             `;
 
         }
 
-
         resetAnalysis();
-
         resetProbabilityBars();
 
         return;
-
     }
 
 
@@ -752,9 +525,7 @@ async function handleMatchSelection() {
     selectedMatch =
         matches.find(
             match =>
-                String(
-                    match.match_id
-                ) ===
+                String(match.match_id) ===
                 String(matchId)
         );
 
@@ -784,7 +555,6 @@ async function handleMatchSelection() {
     await loadTrendProbabilities(
         Number(matchId)
     );
-
 }
 
 
@@ -792,9 +562,7 @@ async function handleMatchSelection() {
 // DISPLAY MATCH INFORMATION
 // =====================================================
 
-function displayMatchInformation(
-    match
-) {
+function displayMatchInformation(match) {
 
     if (matchVenue) {
 
@@ -803,14 +571,12 @@ function displayMatchInformation(
 
     }
 
-
     if (matchDate) {
 
         matchDate.textContent =
             match.date || "-";
 
     }
-
 
     if (matchBattingTeam) {
 
@@ -819,7 +585,6 @@ function displayMatchInformation(
 
     }
 
-
     if (matchBowlingTeam) {
 
         matchBowlingTeam.textContent =
@@ -827,14 +592,12 @@ function displayMatchInformation(
 
     }
 
-
     if (selectedMatchInfo) {
 
         selectedMatchInfo.style.display =
             "block";
 
     }
-
 }
 
 
@@ -842,14 +605,11 @@ function displayMatchInformation(
 // LOAD MATCH STATES
 // =====================================================
 
-async function loadMatchStates(
-    matchId
-) {
+async function loadMatchStates(matchId) {
 
     showLoading(
         "Loading real ball-by-ball match states..."
     );
-
 
     try {
 
@@ -857,7 +617,6 @@ async function loadMatchStates(
             await fetch(
                 `${API_BASE_URL}/match-states/${matchId}`
             );
-
 
         if (!response.ok) {
 
@@ -867,20 +626,16 @@ async function loadMatchStates(
 
         }
 
-
         const data =
             await response.json();
-
 
         console.log(
             "Match states response:",
             data
         );
 
-
         if (
-            data.status !==
-            "success"
+            data.status !== "success"
         ) {
 
             throw new Error(
@@ -890,14 +645,12 @@ async function loadMatchStates(
 
         }
 
-
         matchStates =
-            data.states || [];
+            Array.isArray(data.states)
+                ? data.states
+                : [];
 
-
-        if (
-            matchStates.length === 0
-        ) {
+        if (matchStates.length === 0) {
 
             throw new Error(
                 "No match states were found."
@@ -905,9 +658,7 @@ async function loadMatchStates(
 
         }
 
-
         populateBallDropdown();
-
 
     } catch (error) {
 
@@ -916,31 +667,25 @@ async function loadMatchStates(
             error
         );
 
-
         showError(
             error.message
         );
 
-
         if (ballSelect) {
 
             ballSelect.innerHTML = `
-
                 <option value="">
                     Unable to load match states
                 </option>
-
             `;
 
         }
-
 
     } finally {
 
         hideLoading();
 
     }
-
 }
 
 
@@ -951,51 +696,36 @@ async function loadMatchStates(
 function populateBallDropdown() {
 
     if (!ballSelect) {
-
         return;
-
     }
 
-
     ballSelect.innerHTML = `
-
         <option value="">
             Select a match state
         </option>
-
     `;
 
+    matchStates.forEach(state => {
 
-    matchStates.forEach(
-        state => {
+        const option =
+            document.createElement("option");
 
-            const option =
-                document.createElement(
-                    "option"
-                );
+        option.value =
+            state.legal_balls;
 
+        option.textContent =
+            `Ball ${state.legal_balls}` +
+            ` | Over ${state.over}` +
+            ` | ${state.score}/${state.wickets_lost}`;
 
-            option.value =
-                state.legal_balls;
+        ballSelect.appendChild(
+            option
+        );
 
-
-            option.textContent =
-                `Ball ${state.legal_balls}` +
-                ` | Over ${state.over}` +
-                ` | ${state.score}/${state.wickets_lost}`;
-
-
-            ballSelect.appendChild(
-                option
-            );
-
-        }
-    );
-
+    });
 
     ballSelect.disabled =
         false;
-
 }
 
 
@@ -1007,60 +737,38 @@ function handleBallSelection() {
 
     hideError();
 
-
     stopReplay();
 
-
     if (result) {
-
-        result.style.display =
-            "none";
-
+        result.style.display = "none";
     }
 
-
     const legalBall =
-        Number(
-            ballSelect.value
-        );
-
+        Number(ballSelect.value);
 
     if (
-        !Number.isFinite(
-            legalBall
-        ) ||
+        !Number.isFinite(legalBall) ||
         !ballSelect.value
     ) {
 
         selectedState = null;
 
-
         if (predictButton) {
-
-            predictButton.disabled =
-                true;
-
+            predictButton.disabled = true;
         }
 
-
         resetAnalysis();
-
         resetProbabilityBars();
 
         return;
-
     }
-
 
     selectedState =
         matchStates.find(
             state =>
-                Number(
-                    state.legal_balls
-                ) ===
+                Number(state.legal_balls) ===
                 legalBall
         );
-
 
     if (!selectedState) {
 
@@ -1068,32 +776,20 @@ function handleBallSelection() {
             "Could not find the selected match state."
         );
 
-
         if (predictButton) {
-
-            predictButton.disabled =
-                true;
-
+            predictButton.disabled = true;
         }
 
-
         return;
-
     }
-
 
     updateAnalysisFromState(
         selectedState
     );
 
-
     if (predictButton) {
-
-        predictButton.disabled =
-            false;
-
+        predictButton.disabled = false;
     }
-
 }
 
 
@@ -1101,16 +797,11 @@ function handleBallSelection() {
 // UPDATE ANALYSIS
 // =====================================================
 
-function updateAnalysisFromState(
-    state
-) {
+function updateAnalysisFromState(state) {
 
     if (!state) {
-
         return;
-
     }
-
 
     if (currentScoreElement) {
 
@@ -1119,14 +810,12 @@ function updateAnalysisFromState(
 
     }
 
-
     if (currentWicketsElement) {
 
         currentWicketsElement.textContent =
             state.wickets_lost ?? "-";
 
     }
-
 
     if (runsRequiredElement) {
 
@@ -1135,7 +824,6 @@ function updateAnalysisFromState(
 
     }
 
-
     if (ballsRemainingElement) {
 
         ballsRemainingElement.textContent =
@@ -1143,26 +831,29 @@ function updateAnalysisFromState(
 
     }
 
-
     if (currentRunRateElement) {
 
+        const currentRunRate =
+            Number(state.current_run_rate);
+
         currentRunRateElement.textContent =
-            Number(
-                state.current_run_rate
-            ).toFixed(2);
+            Number.isFinite(currentRunRate)
+                ? currentRunRate.toFixed(2)
+                : "-";
 
     }
-
 
     if (requiredRunRateElement) {
 
+        const requiredRunRate =
+            Number(state.required_run_rate);
+
         requiredRunRateElement.textContent =
-            Number(
-                state.required_run_rate
-            ).toFixed(2);
+            Number.isFinite(requiredRunRate)
+                ? requiredRunRate.toFixed(2)
+                : "-";
 
     }
-
 
     if (targetElement) {
 
@@ -1171,28 +862,18 @@ function updateAnalysisFromState(
 
     }
 
-
     const pressure =
         calculatePressure(
 
-            Number(
-                state.runs_required
-            ),
+            Number(state.runs_required),
 
-            Number(
-                state.balls_remaining
-            ),
+            Number(state.balls_remaining),
 
-            Number(
-                state.current_run_rate
-            ),
+            Number(state.current_run_rate),
 
-            Number(
-                state.required_run_rate
-            )
+            Number(state.required_run_rate)
 
         );
-
 
     if (pressureValueElement) {
 
@@ -1200,7 +881,6 @@ function updateAnalysisFromState(
             pressure;
 
     }
-
 }
 
 
@@ -1209,67 +889,39 @@ function updateAnalysisFromState(
 // =====================================================
 
 function calculatePressure(
-
     runsRequired,
-
     ballsRemaining,
-
     currentRunRate,
-
     requiredRunRate
-
 ) {
 
-    if (
-        runsRequired <= 0
-    ) {
-
+    if (runsRequired <= 0) {
         return "Won";
-
     }
 
-
-    if (
-        ballsRemaining <= 0
-    ) {
-
+    if (ballsRemaining <= 0) {
         return "Very High";
-
     }
 
-
-    if (
-        requiredRunRate <=
-        currentRunRate
-    ) {
-
+    if (requiredRunRate <= currentRunRate) {
         return "Low";
-
     }
-
 
     if (
         requiredRunRate <=
         currentRunRate * 1.25
     ) {
-
         return "Medium";
-
     }
-
 
     if (
         requiredRunRate <=
         currentRunRate * 2
     ) {
-
         return "High";
-
     }
 
-
     return "Very High";
-
 }
 
 
@@ -1280,68 +932,36 @@ function calculatePressure(
 function resetAnalysis() {
 
     if (currentScoreElement) {
-
-        currentScoreElement.textContent =
-            "-";
-
+        currentScoreElement.textContent = "-";
     }
-
 
     if (currentWicketsElement) {
-
-        currentWicketsElement.textContent =
-            "-";
-
+        currentWicketsElement.textContent = "-";
     }
-
 
     if (runsRequiredElement) {
-
-        runsRequiredElement.textContent =
-            "-";
-
+        runsRequiredElement.textContent = "-";
     }
-
 
     if (ballsRemainingElement) {
-
-        ballsRemainingElement.textContent =
-            "-";
-
+        ballsRemainingElement.textContent = "-";
     }
-
 
     if (currentRunRateElement) {
-
-        currentRunRateElement.textContent =
-            "-";
-
+        currentRunRateElement.textContent = "-";
     }
-
 
     if (requiredRunRateElement) {
-
-        requiredRunRateElement.textContent =
-            "-";
-
+        requiredRunRateElement.textContent = "-";
     }
-
 
     if (targetElement) {
-
-        targetElement.textContent =
-            "-";
-
+        targetElement.textContent = "-";
     }
-
 
     if (pressureValueElement) {
-
-        pressureValueElement.textContent =
-            "-";
-
+        pressureValueElement.textContent = "-";
     }
-
 }
 
 
@@ -1358,14 +978,12 @@ function resetProbabilityBars() {
 
     }
 
-
     if (bowlingProbabilityBar) {
 
         bowlingProbabilityBar.style.width =
             "0%";
 
     }
-
 }
 
 
@@ -1374,11 +992,8 @@ function resetProbabilityBars() {
 // =====================================================
 
 function updateProbabilityBars(
-
     battingValue,
-
     bowlingValue
-
 ) {
 
     if (battingProbabilityBar) {
@@ -1388,12 +1003,11 @@ function updateProbabilityBars(
                 0,
                 Math.min(
                     100,
-                    battingValue
+                    Number(battingValue) || 0
                 )
             )}%`;
 
     }
-
 
     if (bowlingProbabilityBar) {
 
@@ -1402,12 +1016,11 @@ function updateProbabilityBars(
                 0,
                 Math.min(
                     100,
-                    bowlingValue
+                    Number(bowlingValue) || 0
                 )
             )}%`;
 
     }
-
 }
 
 
@@ -1415,14 +1028,11 @@ function updateProbabilityBars(
 // LOAD REAL TRANSFORMER TREND
 // =====================================================
 
-async function loadTrendProbabilities(
-    matchId
-) {
+async function loadTrendProbabilities(matchId) {
 
     showLoading(
         "Transformer AI is calculating the complete win probability trend..."
     );
-
 
     try {
 
@@ -1430,7 +1040,6 @@ async function loadTrendProbabilities(
             await fetch(
                 `${API_BASE_URL}/match-probabilities/${matchId}`
             );
-
 
         if (!response.ok) {
 
@@ -1440,20 +1049,16 @@ async function loadTrendProbabilities(
 
         }
 
-
         const data =
             await response.json();
-
 
         console.log(
             "Trend API response:",
             data
         );
 
-
         if (
-            data.status !==
-            "success"
+            data.status !== "success"
         ) {
 
             throw new Error(
@@ -1463,10 +1068,10 @@ async function loadTrendProbabilities(
 
         }
 
-
         trendProbabilities =
-            data.probabilities || [];
-
+            Array.isArray(data.probabilities)
+                ? data.probabilities
+                : [];
 
         if (
             trendProbabilities.length === 0
@@ -1474,27 +1079,22 @@ async function loadTrendProbabilities(
 
             clearTrendChart();
 
-
             throw new Error(
                 "No probability trend data was returned."
             );
 
         }
 
-
         updateTrendChart(
             trendProbabilities
         );
 
-
         initializeReplay();
-
 
         console.log(
             `Loaded ${trendProbabilities.length} ` +
             `real Transformer predictions.`
         );
-
 
     } catch (error) {
 
@@ -1503,19 +1103,16 @@ async function loadTrendProbabilities(
             error
         );
 
-
         showError(
             "Could not load win probability trend. " +
             error.message
         );
-
 
     } finally {
 
         hideLoading();
 
     }
-
 }
 
 
@@ -1527,7 +1124,6 @@ async function predictWinProbability() {
 
     hideError();
 
-
     if (
         !selectedMatch ||
         !selectedState
@@ -1538,44 +1134,27 @@ async function predictWinProbability() {
         );
 
         return;
-
     }
-
 
     showLoading(
         "Transformer AI is analyzing the real match..."
     );
 
-
     if (result) {
-
-        result.style.display =
-            "none";
-
+        result.style.display = "none";
     }
-
 
     if (predictButton) {
-
-        predictButton.disabled =
-            true;
-
+        predictButton.disabled = true;
     }
-
 
     try {
 
         const matchId =
-            Number(
-                selectedMatch.match_id
-            );
-
+            Number(selectedMatch.match_id);
 
         const legalBall =
-            Number(
-                selectedState.legal_balls
-            );
-
+            Number(selectedState.legal_balls);
 
         console.log(
             "Sending real prediction request:",
@@ -1585,20 +1164,16 @@ async function predictWinProbability() {
             }
         );
 
-
         const response =
             await fetch(
                 `${API_BASE_URL}/predict-real`,
                 {
 
-                    method:
-                        "POST",
+                    method: "POST",
 
                     headers: {
-
                         "Content-Type":
                             "application/json"
-
                     },
 
                     body:
@@ -1615,7 +1190,6 @@ async function predictWinProbability() {
                 }
             );
 
-
         if (!response.ok) {
 
             throw new Error(
@@ -1624,20 +1198,16 @@ async function predictWinProbability() {
 
         }
 
-
         const data =
             await response.json();
-
 
         console.log(
             "Prediction API response:",
             data
         );
 
-
         if (
-            data.status !==
-            "success"
+            data.status !== "success"
         ) {
 
             throw new Error(
@@ -1647,18 +1217,15 @@ async function predictWinProbability() {
 
         }
 
-
         const battingWinProbability =
             Number(
                 data.batting_team_win_probability
             );
 
-
         const bowlingWinProbability =
             Number(
                 data.bowling_team_win_probability
             );
-
 
         if (
             !Number.isFinite(
@@ -1718,13 +1285,13 @@ async function predictWinProbability() {
         const pressure =
             calculatePressure(
 
-                data.runs_required,
+                Number(data.runs_required),
 
-                data.balls_remaining,
+                Number(data.balls_remaining),
 
-                data.current_run_rate,
+                Number(data.current_run_rate),
 
-                data.required_run_rate
+                Number(data.required_run_rate)
 
             );
 
@@ -1782,14 +1349,11 @@ async function predictWinProbability() {
         // Keep latest 50 predictions
 
         if (
-            predictionHistory.length >
-            50
+            predictionHistory.length > 50
         ) {
 
             predictionHistory =
-                predictionHistory.slice(
-                    -50
-                );
+                predictionHistory.slice(-50);
 
         }
 
@@ -1812,27 +1376,20 @@ async function predictWinProbability() {
             error
         );
 
-
         showError(
             error.message ||
             "Something went wrong while making the prediction."
         );
 
-
     } finally {
 
         hideLoading();
 
-
         if (predictButton) {
-
-            predictButton.disabled =
-                false;
-
+            predictButton.disabled = false;
         }
 
     }
-
 }
 
 
@@ -1841,22 +1398,16 @@ async function predictWinProbability() {
 // Used by both manual prediction and replay
 // =====================================================
 
-function displayPredictionResult(
-    data
-) {
+function displayPredictionResult(data) {
 
     if (!data) {
-
         return;
-
     }
-
 
     const battingProbabilityValue =
         Number(
             data.batting_team_win_probability
         );
-
 
     const bowlingProbabilityValue =
         Number(
@@ -1909,6 +1460,10 @@ function displayPredictionResult(
     );
 
 
+    // =================================================
+    // PREDICTION MESSAGE
+    // =================================================
+
     if (predictionText) {
 
         if (
@@ -1947,7 +1502,6 @@ function displayPredictionResult(
             "block";
 
     }
-
 }
 
 
@@ -1955,154 +1509,284 @@ function displayPredictionResult(
 // CURRENT PROBABILITY CHART
 // =====================================================
 
-function updateProbabilityChart() {
+function updateProbabilityChart(
+    battingTeam,
+    bowlingTeam,
+    battingProbabilityValue,
+    bowlingProbabilityValue
+) {
 
-    const ctx = document.getElementById("probabilityChart");
+    const ctx =
+        document.getElementById(
+            "probabilityChart"
+        );
 
-    if (!ctx) return;
-
-    if (probabilityChart) {
-        probabilityChart.destroy();
+    if (!ctx) {
+        return;
     }
 
-    probabilityChart = new Chart(ctx, {
+    if (typeof Chart === "undefined") {
 
-        type: "bar",
+        console.error(
+            "Chart.js is not loaded."
+        );
 
-        data: {
+        return;
+    }
 
-            labels: [
-                battingTeamName.textContent,
-                bowlingTeamName.textContent
-            ],
+    if (probabilityChart) {
 
-            datasets: [
+        probabilityChart.destroy();
 
-                {
-                    label: "Win Probability",
+        probabilityChart =
+            null;
+    }
 
-                    data: [
-                        battingProbabilityValue,
-                        bowlingProbabilityValue
+
+    probabilityChart =
+        new Chart(
+            ctx,
+            {
+
+                type: "bar",
+
+                data: {
+
+                    labels: [
+                        battingTeam || "Batting Team",
+                        bowlingTeam || "Bowling Team"
                     ],
 
-                    borderWidth: 0,
+                    datasets: [
 
-                    borderRadius: 12,
+                        {
 
-                    barThickness: 55,
+                            label:
+                                "Win Probability",
 
-                    backgroundColor: [
-                        "rgba(59, 130, 246, 0.85)",
-                        "rgba(139, 92, 246, 0.85)"
-                    ],
+                            data: [
 
-                    hoverBackgroundColor: [
-                        "rgba(59, 130, 246, 1)",
-                        "rgba(139, 92, 246, 1)"
+                                Number(
+                                    battingProbabilityValue
+                                ) || 0,
+
+                                Number(
+                                    bowlingProbabilityValue
+                                ) || 0
+
+                            ],
+
+                            borderWidth:
+                                0,
+
+                            borderRadius:
+                                12,
+
+                            barThickness:
+                                55,
+
+                            backgroundColor: [
+
+                                "rgba(59, 130, 246, 0.85)",
+
+                                "rgba(139, 92, 246, 0.85)"
+
+                            ],
+
+                            hoverBackgroundColor: [
+
+                                "rgba(59, 130, 246, 1)",
+
+                                "rgba(139, 92, 246, 1)"
+
+                            ]
+
+                        }
+
                     ]
-                }
 
-            ]
-
-        },
-
-        options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            animation: {
-                duration: 800
-            },
-
-            plugins: {
-
-                legend: {
-                    display: false
                 },
 
-                tooltip: {
+                options: {
 
-                    backgroundColor: "#111827",
+                    responsive:
+                        true,
 
-                    titleColor: "#ffffff",
+                    maintainAspectRatio:
+                        false,
 
-                    bodyColor: "#d1d5db",
+                    animation: {
 
-                    padding: 12,
+                        duration:
+                            800
 
-                    displayColors: false,
+                    },
 
-                    callbacks: {
+                    plugins: {
 
-                        label: function(context) {
+                        legend: {
 
-                            return " Win Probability: "
-                                + context.parsed.y.toFixed(1)
-                                + "%";
+                            display:
+                                false
 
-                        }
+                        },
 
-                    }
+                        tooltip: {
 
-                }
+                            backgroundColor:
+                                "#111827",
 
-            },
+                            titleColor:
+                                "#ffffff",
 
-            scales: {
+                            bodyColor:
+                                "#d1d5db",
 
-                y: {
+                            padding:
+                                12,
 
-                    beginAtZero: true,
+                            displayColors:
+                                false,
 
-                    max: 100,
+                            callbacks: {
 
-                    ticks: {
+                                label:
+                                    function(context) {
 
-                        color: "#94a3b8",
+                                        return (
+                                            " Win Probability: " +
+                                            Number(
+                                                context.parsed.y
+                                            ).toFixed(1) +
+                                            "%"
+                                        );
 
-                        callback: function(value) {
-                            return value + "%";
+                                    }
+
+                            }
+
                         }
 
                     },
 
-                    grid: {
-                        color: "rgba(148, 163, 184, 0.12)"
-                    }
+                    scales: {
 
-                },
+                        y: {
 
-                x: {
+                            beginAtZero:
+                                true,
 
-                    ticks: {
-                        color: "#cbd5e1"
-                    },
+                            max:
+                                100,
 
-                    grid: {
-                        display: false
+                            ticks: {
+
+                                color:
+                                    "#94a3b8",
+
+                                callback:
+                                    function(value) {
+
+                                        return (
+                                            value +
+                                            "%"
+                                        );
+
+                                    }
+
+                            },
+
+                            grid: {
+
+                                color:
+                                    "rgba(148, 163, 184, 0.12)"
+
+                            }
+
+                        },
+
+                        x: {
+
+                            ticks: {
+
+                                color:
+                                    "#cbd5e1"
+
+                            },
+
+                            grid: {
+
+                                display:
+                                    false
+
+                            }
+
+                        }
+
                     }
 
                 }
 
             }
-
-        }
-
-    });
-
+        );
 }
+
+
 // =====================================================
 // CLEAR TREND CHART
 // =====================================================
 
 function clearTrendChart() {
 
+    if (trendChart) {
+
+        trendChart.destroy();
+
+        trendChart =
+            null;
+
+    }
+}
+
+
+// =====================================================
+// REAL WIN PROBABILITY TREND CHART
+// =====================================================
+
+function updateTrendChart(
+    probabilities
+) {
+
+    const ctx =
+        document.getElementById(
+            "trendChart"
+        );
+
+    if (!ctx) {
+        return;
+    }
+
+    if (typeof Chart === "undefined") {
+
+        console.error(
+            "Chart.js is not loaded."
+        );
+
+        return;
+    }
+
     if (
-        trendChart
+        !Array.isArray(probabilities) ||
+        probabilities.length === 0
     ) {
+
+        clearTrendChart();
+
+        return;
+    }
+
+
+    if (trendChart) {
 
         trendChart.destroy();
 
@@ -2111,243 +1795,6 @@ function clearTrendChart() {
 
     }
 
-}
-
-
-// =====================================================
-// REAL WIN PROBABILITY TREND CHART
-// =====================================================
-
-function updateTrendChart(probabilities) {
-
-    const ctx = document.getElementById("trendChart");
-
-    if (!ctx) return;
-
-    if (trendChart) {
-        trendChart.destroy();
-    }
-
-    const labels = probabilities.map(item =>
-        `Ball ${item.legal_balls}`
-    );
-
-    const battingData = probabilities.map(item =>
-        Number(item.batting_probability)
-    );
-
-    const bowlingData = probabilities.map(item =>
-        Number(item.bowling_probability)
-    );
-
-    trendChart = new Chart(ctx, {
-
-        type: "line",
-
-        data: {
-
-            labels: labels,
-
-            datasets: [
-
-                {
-                    label: battingTeamName.textContent,
-
-                    data: battingData,
-
-                    borderWidth: 3,
-
-                    tension: 0.35,
-
-                    pointRadius: 2,
-
-                    pointHoverRadius: 6,
-
-                    fill: true,
-
-                    backgroundColor:
-                        "rgba(59, 130, 246, 0.10)",
-
-                    borderColor:
-                        "rgba(59, 130, 246, 1)"
-                },
-
-                {
-                    label: bowlingTeamName.textContent,
-
-                    data: bowlingData,
-
-                    borderWidth: 3,
-
-                    tension: 0.35,
-
-                    pointRadius: 2,
-
-                    pointHoverRadius: 6,
-
-                    fill: true,
-
-                    backgroundColor:
-                        "rgba(139, 92, 246, 0.10)",
-
-                    borderColor:
-                        "rgba(139, 92, 246, 1)"
-                }
-
-            ]
-
-        },
-
-        options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            interaction: {
-
-                mode: "index",
-
-                intersect: false
-
-            },
-
-            animation: {
-
-                duration: 700
-
-            },
-
-            plugins: {
-
-                legend: {
-
-                    display: true,
-
-                    position: "top",
-
-                    labels: {
-
-                        color: "#cbd5e1",
-
-                        padding: 20,
-
-                        usePointStyle: true
-
-                    }
-
-                },
-
-                tooltip: {
-
-                    backgroundColor: "#111827",
-
-                    titleColor: "#ffffff",
-
-                    bodyColor: "#d1d5db",
-
-                    padding: 12,
-
-                    callbacks: {
-
-                        title: function(context) {
-
-                            return context[0].label;
-
-                        },
-
-                        label: function(context) {
-
-                            return (
-                                " " +
-                                context.dataset.label +
-                                ": " +
-                                context.parsed.y.toFixed(1) +
-                                "%"
-                            );
-
-                        }
-
-                    }
-
-                }
-
-            },
-
-            scales: {
-
-                y: {
-
-                    beginAtZero: true,
-
-                    max: 100,
-
-                    ticks: {
-
-                        color: "#94a3b8",
-
-                        callback: function(value) {
-
-                            return value + "%";
-
-                        }
-
-                    },
-
-                    grid: {
-
-                        color:
-                            "rgba(148, 163, 184, 0.10)"
-
-                    },
-
-                    title: {
-
-                        display: true,
-
-                        text: "Win Probability (%)",
-
-                        color: "#94a3b8"
-
-                    }
-
-                },
-
-                x: {
-
-                    ticks: {
-
-                        color: "#94a3b8",
-
-                        maxTicksLimit: 12
-
-                    },
-
-                    grid: {
-
-                        display: false
-
-                    },
-
-                    title: {
-
-                        display: true,
-
-                        text: "Legal Ball",
-
-                        color: "#94a3b8"
-
-                    }
-
-                }
-
-            }
-
-        }
-
-    });
-
-}
 
     // =================================================
     // X-AXIS LABELS
@@ -2368,7 +1815,9 @@ function updateTrendChart(probabilities) {
         probabilities.map(
             item =>
                 Number(
-                    item.batting_team_win_probability
+                    item.batting_team_win_probability ??
+                    item.batting_probability ??
+                    0
                 )
         );
 
@@ -2381,7 +1830,9 @@ function updateTrendChart(probabilities) {
         probabilities.map(
             item =>
                 Number(
-                    item.bowling_team_win_probability
+                    item.bowling_team_win_probability ??
+                    item.bowling_probability ??
+                    0
                 )
         );
 
@@ -2394,83 +1845,105 @@ function updateTrendChart(probabilities) {
         probabilities[0].batting_team ||
         "Batting Team";
 
-
     const bowlingTeam =
         probabilities[0].bowling_team ||
         "Bowling Team";
 
 
+    // Update team names if available
+
+    if (battingTeamName) {
+
+        battingTeamName.textContent =
+            battingTeam;
+
+    }
+
+    if (bowlingTeamName) {
+
+        bowlingTeamName.textContent =
+            bowlingTeam;
+
+    }
+
+
     // =================================================
-    // CREATE CHART
+    // CREATE TREND CHART
     // =================================================
 
     trendChart =
         new Chart(
-
-            trendChartCanvas,
-
+            ctx,
             {
 
-                type:
-                    "line",
-
+                type: "line",
 
                 data: {
 
                     labels:
                         labels,
 
-
                     datasets: [
 
                         {
 
                             label:
-                                `${battingTeam} Win %`,
+                                battingTeam,
 
                             data:
                                 battingProbabilities,
 
-                            tension:
-                                0.3,
-
                             borderWidth:
-                                2,
+                                3,
 
-                            fill:
-                                false,
+                            tension:
+                                0.35,
 
                             pointRadius:
                                 2,
 
                             pointHoverRadius:
-                                5
+                                6,
+
+                            fill:
+                                true,
+
+                            backgroundColor:
+                                "rgba(59, 130, 246, 0.10)",
+
+                            borderColor:
+                                "rgba(59, 130, 246, 1)"
 
                         },
-
 
                         {
 
                             label:
-                                `${bowlingTeam} Win %`,
+                                bowlingTeam,
 
                             data:
                                 bowlingProbabilities,
 
-                            tension:
-                                0.3,
-
                             borderWidth:
-                                2,
+                                3,
 
-                            fill:
-                                false,
+                            tension:
+                                0.35,
 
                             pointRadius:
                                 2,
 
                             pointHoverRadius:
-                                5
+                                6,
+
+                            fill:
+                                true,
+
+                            backgroundColor:
+                                "rgba(139, 92, 246, 0.10)",
+
+                            borderColor:
+                                "rgba(139, 92, 246, 1)"
 
                         }
 
@@ -2478,15 +1951,13 @@ function updateTrendChart(probabilities) {
 
                 },
 
-
                 options: {
 
                     responsive:
                         true,
 
                     maintainAspectRatio:
-                        true,
-
+                        false,
 
                     interaction: {
 
@@ -2498,70 +1969,14 @@ function updateTrendChart(probabilities) {
 
                     },
 
+                    animation: {
 
-                    scales: {
-
-                        y: {
-
-                            beginAtZero:
-                                true,
-
-                            max:
-                                100,
-
-                            title: {
-
-                                display:
-                                    true,
-
-                                text:
-                                    "Win Probability (%)"
-
-                            }
-
-                        },
-
-
-                        x: {
-
-                            title: {
-
-                                display:
-                                    true,
-
-                                text:
-                                    "Legal Ball"
-
-                            },
-
-
-                            ticks: {
-
-                                autoSkip:
-                                    true,
-
-                                maxTicksLimit:
-                                    15
-
-                            }
-
-                        }
+                        duration:
+                            700
 
                     },
 
-
                     plugins: {
-
-                        title: {
-
-                            display:
-                                true,
-
-                            text:
-                                "Real Transformer Win Probability Trend"
-
-                        },
-
 
                         legend: {
 
@@ -2569,12 +1984,36 @@ function updateTrendChart(probabilities) {
                                 true,
 
                             position:
-                                "top"
+                                "top",
+
+                            labels: {
+
+                                color:
+                                    "#cbd5e1",
+
+                                padding:
+                                    20,
+
+                                usePointStyle:
+                                    true
+
+                            }
 
                         },
 
-
                         tooltip: {
+
+                            backgroundColor:
+                                "#111827",
+
+                            titleColor:
+                                "#ffffff",
+
+                            bodyColor:
+                                "#d1d5db",
+
+                            padding:
+                                12,
 
                             callbacks: {
 
@@ -2590,23 +2029,15 @@ function updateTrendChart(probabilities) {
 
                                         }
 
-
                                         const index =
                                             context[0].dataIndex;
 
-
                                         const item =
-                                            probabilities[
-                                                index
-                                            ];
-
+                                            probabilities[index];
 
                                         if (!item) {
-
                                             return "";
-
                                         }
-
 
                                         return (
                                             `Ball ${item.legal_balls}` +
@@ -2615,6 +2046,20 @@ function updateTrendChart(probabilities) {
 
                                     },
 
+                                label:
+                                    function(context) {
+
+                                        return (
+                                            " " +
+                                            context.dataset.label +
+                                            ": " +
+                                            Number(
+                                                context.parsed.y
+                                            ).toFixed(1) +
+                                            "%"
+                                        );
+
+                                    },
 
                                 afterBody:
                                     function(context) {
@@ -2628,33 +2073,110 @@ function updateTrendChart(probabilities) {
 
                                         }
 
-
                                         const index =
                                             context[0].dataIndex;
 
-
                                         const item =
-                                            probabilities[
-                                                index
-                                            ];
-
+                                            probabilities[index];
 
                                         if (!item) {
-
                                             return "";
-
                                         }
-
 
                                         return [
 
-                                            `Score: ${item.score}/${item.wickets_lost}`,
+                                            `Score: ${item.score ?? "-"}/${item.wickets_lost ?? "-"}`,
 
-                                            `${item.batting_team} vs ${item.bowling_team}`
+                                            `${item.batting_team || battingTeam} vs ${item.bowling_team || bowlingTeam}`
 
                                         ];
 
                                     }
+
+                            }
+
+                        }
+
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero:
+                                true,
+
+                            max:
+                                100,
+
+                            ticks: {
+
+                                color:
+                                    "#94a3b8",
+
+                                callback:
+                                    function(value) {
+
+                                        return (
+                                            value +
+                                            "%"
+                                        );
+
+                                    }
+
+                            },
+
+                            grid: {
+
+                                color:
+                                    "rgba(148, 163, 184, 0.10)"
+
+                            },
+
+                            title: {
+
+                                display:
+                                    true,
+
+                                text:
+                                    "Win Probability (%)",
+
+                                color:
+                                    "#94a3b8"
+
+                            }
+
+                        },
+
+                        x: {
+
+                            ticks: {
+
+                                color:
+                                    "#94a3b8",
+
+                                maxTicksLimit:
+                                    12
+
+                            },
+
+                            grid: {
+
+                                display:
+                                    false
+
+                            },
+
+                            title: {
+
+                                display:
+                                    true,
+
+                                text:
+                                    "Legal Ball",
+
+                                color:
+                                    "#94a3b8"
 
                             }
 
@@ -2665,9 +2187,7 @@ function updateTrendChart(probabilities) {
                 }
 
             }
-
         );
-
 }
 
 
@@ -2683,9 +2203,7 @@ function initializeReplay() {
 
     stopReplay();
 
-
     replayData = [];
-
 
     if (
         !trendProbabilities ||
@@ -2695,12 +2213,11 @@ function initializeReplay() {
         if (replaySection) {
 
             replaySection.style.display =
-                "block";
+                "none";
 
         }
 
         return;
-
     }
 
 
@@ -2721,7 +2238,6 @@ function initializeReplay() {
                             prediction.legal_balls
                         )
                 );
-
 
             if (state) {
 
@@ -2751,7 +2267,6 @@ function initializeReplay() {
         }
 
         return;
-
     }
 
 
@@ -2766,9 +2281,7 @@ function initializeReplay() {
 
     }
 
-
-    replayIndex =
-        0;
+    replayIndex = 0;
 
 
     // =================================================
@@ -2797,28 +2310,16 @@ function initializeReplay() {
     // =================================================
 
     if (startReplayButton) {
-
-        startReplayButton.disabled =
-            false;
-
+        startReplayButton.disabled = false;
     }
-
 
     if (pauseReplayButton) {
-
-        pauseReplayButton.disabled =
-            true;
-
+        pauseReplayButton.disabled = true;
     }
-
 
     if (previousBallButton) {
-
-        previousBallButton.disabled =
-            true;
-
+        previousBallButton.disabled = true;
     }
-
 
     if (nextBallButton) {
 
@@ -2827,12 +2328,8 @@ function initializeReplay() {
 
     }
 
-
     if (restartReplayButton) {
-
-        restartReplayButton.disabled =
-            false;
-
+        restartReplayButton.disabled = false;
     }
 
 
@@ -2842,12 +2339,10 @@ function initializeReplay() {
 
     renderReplayState();
 
-
     console.log(
         `Replay initialized with ${replayData.length} ` +
         `real Transformer predictions.`
     );
-
 }
 
 
@@ -2863,20 +2358,13 @@ function renderReplayState() {
     ) {
 
         return;
-
     }
 
-
     const item =
-        replayData[
-            replayIndex
-        ];
-
+        replayData[replayIndex];
 
     if (!item) {
-
         return;
-
     }
 
 
@@ -2885,34 +2373,23 @@ function renderReplayState() {
     // =================================================
 
     if (replayBall) {
-
         replayBall.textContent =
             item.legal_balls;
-
     }
-
 
     if (replayOver) {
-
         replayOver.textContent =
             `Over ${item.over}`;
-
     }
-
 
     if (replayScore) {
-
         replayScore.textContent =
             item.score;
-
     }
 
-
     if (replayWickets) {
-
         replayWickets.textContent =
             item.wickets_lost;
-
     }
 
 
@@ -2926,7 +2403,6 @@ function renderReplayState() {
             item.batting_team;
 
     }
-
 
     if (replayBowlingTeam) {
 
@@ -2942,13 +2418,16 @@ function renderReplayState() {
 
     const battingProbabilityValue =
         Number(
-            item.batting_team_win_probability
+            item.batting_team_win_probability ??
+            item.batting_probability ??
+            0
         );
-
 
     const bowlingProbabilityValue =
         Number(
-            item.bowling_team_win_probability
+            item.bowling_team_win_probability ??
+            item.bowling_probability ??
+            0
         );
 
 
@@ -2958,7 +2437,6 @@ function renderReplayState() {
             `${battingProbabilityValue.toFixed(2)}%`;
 
     }
-
 
     if (replayBowlingProbability) {
 
@@ -2988,12 +2466,11 @@ function renderReplayState() {
     if (replayProgress) {
 
         replayProgress.textContent =
-            `Prediction ${replayIndex + 1} ` +
-            `of ${replayData.length}` +
+            `Prediction ${replayIndex + 1}` +
+            ` of ${replayData.length}` +
             ` | Ball ${item.legal_balls}`;
 
     }
-
 
     if (replaySlider) {
 
@@ -3013,7 +2490,6 @@ function renderReplayState() {
             replayIndex === 0;
 
     }
-
 
     if (nextBallButton) {
 
@@ -3056,7 +2532,7 @@ function renderReplayState() {
 
 
     // =================================================
-    // UPDATE EXISTING MATCH ANALYSIS
+    // UPDATE MATCH ANALYSIS
     // =================================================
 
     updateAnalysisFromState(
@@ -3065,7 +2541,7 @@ function renderReplayState() {
 
 
     // =================================================
-    // UPDATE EXISTING PREDICTION RESULT
+    // UPDATE MAIN RESULT
     // =================================================
 
     displayPredictionResult({
@@ -3100,7 +2576,6 @@ function renderReplayState() {
         bowlingProbabilityValue
 
     );
-
 }
 
 
@@ -3116,7 +2591,6 @@ function startReplay() {
     ) {
 
         return;
-
     }
 
 
@@ -3128,8 +2602,7 @@ function startReplay() {
         replayData.length - 1
     ) {
 
-        replayIndex =
-            0;
+        replayIndex = 0;
 
         renderReplayState();
 
@@ -3184,20 +2657,12 @@ function startReplay() {
 
 
     if (startReplayButton) {
-
-        startReplayButton.disabled =
-            true;
-
+        startReplayButton.disabled = true;
     }
-
 
     if (pauseReplayButton) {
-
-        pauseReplayButton.disabled =
-            false;
-
+        pauseReplayButton.disabled = false;
     }
-
 }
 
 
@@ -3228,14 +2693,12 @@ function pauseReplay() {
 
     }
 
-
     if (pauseReplayButton) {
 
         pauseReplayButton.disabled =
             true;
 
     }
-
 }
 
 
@@ -3266,14 +2729,12 @@ function stopReplay() {
 
     }
 
-
     if (pauseReplayButton) {
 
         pauseReplayButton.disabled =
             true;
 
     }
-
 }
 
 
@@ -3285,7 +2746,6 @@ function showPreviousReplayBall() {
 
     pauseReplay();
 
-
     if (
         replayIndex > 0
     ) {
@@ -3295,7 +2755,6 @@ function showPreviousReplayBall() {
         renderReplayState();
 
     }
-
 }
 
 
@@ -3307,7 +2766,6 @@ function showNextReplayBall() {
 
     pauseReplay();
 
-
     if (
         replayIndex <
         replayData.length - 1
@@ -3318,7 +2776,6 @@ function showNextReplayBall() {
         renderReplayState();
 
     }
-
 }
 
 
@@ -3330,13 +2787,9 @@ function restartReplay() {
 
     pauseReplay();
 
-
-    replayIndex =
-        0;
-
+    replayIndex = 0;
 
     renderReplayState();
-
 }
 
 
@@ -3348,7 +2801,6 @@ function changeReplayPosition() {
 
     pauseReplay();
 
-
     if (
         !replayData ||
         replayData.length === 0
@@ -3358,15 +2810,12 @@ function changeReplayPosition() {
 
     }
 
-
     replayIndex =
         Number(
             replaySlider.value
         );
 
-
     renderReplayState();
-
 }
 
 
@@ -3377,11 +2826,8 @@ function changeReplayPosition() {
 function changeReplaySpeed() {
 
     if (!replaySpeed) {
-
         return;
-
     }
-
 
     replayInterval =
         Number(
@@ -3397,10 +2843,11 @@ function changeReplaySpeed() {
 
     if (wasRunning) {
 
+        pauseReplay();
+
         startReplay();
 
     }
-
 }
 
 
@@ -3411,15 +2858,11 @@ function changeReplaySpeed() {
 function renderHistory() {
 
     if (!historyBody) {
-
         return;
-
     }
-
 
     historyBody.innerHTML =
         "";
-
 
     const reversedHistory =
         [
@@ -3432,32 +2875,21 @@ function renderHistory() {
     ) {
 
         const row =
-            document.createElement(
-                "tr"
-            );
-
+            document.createElement("tr");
 
         row.innerHTML = `
-
             <td colspan="11">
-
                 No predictions yet.
-
                 Select a real IPL match
                 and make a prediction.
-
             </td>
-
         `;
-
 
         historyBody.appendChild(
             row
         );
 
-
         return;
-
     }
 
 
@@ -3465,10 +2897,7 @@ function renderHistory() {
         (item, index) => {
 
             const row =
-                document.createElement(
-                    "tr"
-                );
-
+                document.createElement("tr");
 
             row.innerHTML = `
 
@@ -3518,14 +2947,12 @@ function renderHistory() {
 
             `;
 
-
             historyBody.appendChild(
                 row
             );
 
         }
     );
-
 }
 
 
@@ -3540,34 +2967,24 @@ function clearHistory() {
     ) {
 
         return;
-
     }
-
 
     const confirmed =
         confirm(
             "Are you sure you want to clear all prediction history?"
         );
 
-
     if (!confirmed) {
-
         return;
-
     }
 
-
-    predictionHistory =
-        [];
-
+    predictionHistory = [];
 
     localStorage.removeItem(
         "predictionHistory"
     );
 
-
     renderHistory();
-
 }
 
 
@@ -3584,7 +3001,6 @@ if (matchSelect) {
 
 }
 
-
 if (ballSelect) {
 
     ballSelect.addEventListener(
@@ -3594,7 +3010,6 @@ if (ballSelect) {
 
 }
 
-
 if (predictButton) {
 
     predictButton.addEventListener(
@@ -3603,7 +3018,6 @@ if (predictButton) {
     );
 
 }
-
 
 if (clearHistoryButton) {
 
@@ -3628,7 +3042,6 @@ if (previousBallButton) {
 
 }
 
-
 if (startReplayButton) {
 
     startReplayButton.addEventListener(
@@ -3637,7 +3050,6 @@ if (startReplayButton) {
     );
 
 }
-
 
 if (pauseReplayButton) {
 
@@ -3648,7 +3060,6 @@ if (pauseReplayButton) {
 
 }
 
-
 if (nextBallButton) {
 
     nextBallButton.addEventListener(
@@ -3657,7 +3068,6 @@ if (nextBallButton) {
     );
 
 }
-
 
 if (restartReplayButton) {
 
@@ -3668,7 +3078,6 @@ if (restartReplayButton) {
 
 }
 
-
 if (replaySlider) {
 
     replaySlider.addEventListener(
@@ -3677,7 +3086,6 @@ if (replaySlider) {
     );
 
 }
-
 
 if (replaySpeed) {
 
@@ -3696,6 +3104,10 @@ if (replaySpeed) {
 document.addEventListener(
     "DOMContentLoaded",
     function() {
+
+        console.log(
+            "IPL AI Dashboard initialized."
+        );
 
         renderHistory();
 
